@@ -2,6 +2,9 @@ package oop.evolution;
 
 /**
  * Enum used to describe and modify positions of animals on the map.
+ *
+ * @author baranskia
+ *
  */
 public enum MapDirection {
     NORTH,

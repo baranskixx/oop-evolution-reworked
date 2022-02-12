@@ -4,6 +4,8 @@ import java.util.Objects;
 
 /**
  * Representation of objects positions on the map.
+ * @author baranskia
+ *
  */
 public class Vector2d {
     public final int x, y;
