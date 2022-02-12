@@ -1,5 +1,6 @@
 package oop.evolution.Interfaces;
 
+import oop.evolution.OnMapObjects.Animal;
 import oop.evolution.Vector2d;
 
 /**
