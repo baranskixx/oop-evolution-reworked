@@ -1,5 +1,7 @@
 package oop.evolution;
 
+import java.util.Random;
+
 /**
  * Enum used to describe and modify positions of animals on the map.
  *
@@ -59,5 +61,13 @@ public enum MapDirection {
             case WEST -> new Vector2d(-1, 0);
             case NORTH_WEST -> new Vector2d(-1, 1);
         };
+    }
+
+    /**
+     * Pick a random value of the MapDirection enum.
+     * @return a random MapDirection.
+     */
+    public static MapDirection getRandomDirection(){
+        return values()[new Random().nextInt(values().length)];
     }
 }
