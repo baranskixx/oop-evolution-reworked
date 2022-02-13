@@ -1,6 +1,7 @@
 package oop.evolution.Maps;
 
 import oop.evolution.Interfaces.IWorldMap;
+import oop.evolution.OnMapObjects.Animal;
 import oop.evolution.Vector2d;
 
 /**
@@ -77,6 +78,26 @@ public abstract class AbstractMap implements IWorldMap {
 
         jungleLowerLeft = new Vector2d(jLeft, jBottom);
         jungleUpperRight = new Vector2d(jRight, jTop);
+    }
+
+    @Override
+    public boolean canMoveTo(Vector2d position) {
+        return false;
+    }
+
+    @Override
+    public boolean place(Animal animal) {
+        return false;
+    }
+
+    @Override
+    public boolean isOccupied(Vector2d position) {
+        return false;
+    }
+
+    @Override
+    public Object objectAt(Vector2d position) {
+        return null;
     }
 
     public String toString(){
