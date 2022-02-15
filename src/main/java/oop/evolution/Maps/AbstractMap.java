@@ -108,4 +108,15 @@ public abstract class AbstractMap implements IWorldMap {
                 "\nLewy dolny punkt dżungli: " + jungleLowerLeft +
                 "\nPrawy górny punkt dżungli: " + jungleUpperRight;
     }
+
+    /**
+     * Check if given Vector2d is positioned within map borders.
+     * @param position Vector2D.
+     * @return True if position is not crossing map borders. False otherwise.
+     */
+    public boolean onMap(Vector2d position){
+        return mapLowerLeft.precedes(position) && mapUpperRight.follows(position);
+    }
+
+
 }
