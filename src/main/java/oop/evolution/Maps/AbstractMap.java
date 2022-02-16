@@ -18,6 +18,9 @@ public abstract class AbstractMap implements IWorldMap {
     public final Vector2d mapLowerLeft, mapUpperRight;
     public final Vector2d jungleLowerLeft, jungleUpperRight;
 
+    private int animalsCnt = 0;
+    private int plantsCnt  = 0;
+
     /**
      * Class constructor.
      * @param width Number of fields in single row of a map.
