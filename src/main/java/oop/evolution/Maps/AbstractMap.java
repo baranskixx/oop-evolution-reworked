@@ -2,7 +2,12 @@ package oop.evolution.Maps;
 
 import oop.evolution.Interfaces.IWorldMap;
 import oop.evolution.OnMapObjects.Animal;
+import oop.evolution.OnMapObjects.Grass;
 import oop.evolution.Vector2d;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 /**
  * Abstract class that defines properties of the map and operations on those properties.
@@ -21,6 +26,12 @@ public abstract class AbstractMap implements IWorldMap {
     private int animalsCnt = 0;
     private int plantsCnt  = 0;
 
+    private ArrayList<Vector2d> emptyFieldsJungle = new ArrayList<>();
+    private ArrayList<Vector2d> emptyFieldsSteppe = new ArrayList<>();
+    private LinkedHashMap<Vector2d, Integer> elementsOnField = new LinkedHashMap<>();
+
+    private LinkedList<Animal> animals = new LinkedList<>();
+    private LinkedList<Grass> plants = new LinkedList<>();
     /**
      * Class constructor.
      * @param width Number of fields in single row of a map.
@@ -43,6 +54,7 @@ public abstract class AbstractMap implements IWorldMap {
         jungleWidth = Math.min(mapWidth - 2, Math.max(1, (int) (mapWidth * jungleRatio)));
         jungleHeight = Math.min(mapHeight - 2, Math.max(1, (int) (mapHeight * jungleRatio)));
 
+        // calculate jungle borders
         int jLeft, jRight, jBottom, jTop;
 
         if (mapWidth % 2 == 1){
@@ -81,18 +93,39 @@ public abstract class AbstractMap implements IWorldMap {
 
         jungleLowerLeft = new Vector2d(jLeft, jBottom);
         jungleUpperRight = new Vector2d(jRight, jTop);
-    }
 
-    @Override
-    public boolean canMoveTo(Vector2d position) {
-        return false;
+        // fill emptyFields arrayLists and elementsOnFields LinkedHashMap
+        for (int x=0; x < jungleWidth; x++){
+            for (int y=0; y < jungleHeight; y++){
+                Vector2d pos = new Vector2d(x, y);
+                elementsOnField.put(pos, 0);
+                if (insideJungle(pos)){
+                    emptyFieldsJungle.add(pos);
+                } else{
+                    emptyFieldsSteppe.add(pos);
+                }
+            }
+        }
     }
 
     @Override
     public boolean place(Animal animal) {
-        return false;
+        Vector2d animalPos = animal.getPosition();
+        if (!onMap(animalPos)){
+            return false;
+        } else {
+            animalsCnt++;
+            animals.add(animal);
+            elementsOnField.put(animalPos, elementsOnField.get(animalPos) + 1);
+            if(insideJungle(animalPos)){
+                emptyFieldsJungle.remove(animalPos);
+            } else {
+                emptyFieldsSteppe.remove(animalPos);
+            }
+            return true;
+        }
     }
-
+    
     @Override
     public boolean isOccupied(Vector2d position) {
         return false;
@@ -112,6 +145,20 @@ public abstract class AbstractMap implements IWorldMap {
                 "\nPrawy górny punkt dżungli: " + jungleUpperRight;
     }
 
+    @Override
+    public boolean canMoveTo(Vector2d position) {
+        return false;
+    }
+
+    /**
+     * Check if given Vector2D lies inside maps jungle.
+     * @param pos Vector2D to be checked.
+     * @return True if given Vector2D lies inside the jungle. False otherwise.
+     */
+    public boolean insideJungle(Vector2d pos){
+        return jungleLowerLeft.precedes(pos) && jungleUpperRight.follows(pos);
+    }
+
     /**
      * Check if given Vector2d is positioned within map borders.
      * @param position Vector2D.
@@ -120,6 +167,5 @@ public abstract class AbstractMap implements IWorldMap {
     public boolean onMap(Vector2d position){
         return mapLowerLeft.precedes(position) && mapUpperRight.follows(position);
     }
-
 
 }

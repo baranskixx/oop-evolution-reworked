@@ -18,6 +18,9 @@ public class GameEngine implements IEngine {
     public final boolean normalMagic;
     public final boolean wrappedMagic;
 
+    public final int startEnergy;
+    public final int moveEnergy;
+    public final int plantEnergy;
 
     /**
      * Class constructor.
@@ -25,12 +28,18 @@ public class GameEngine implements IEngine {
      * @param wMap WrappedMap to run simulation on.
      * @param nMagic Is simulation run on normalMap a magic one?
      * @param wMagic Is simulation run on wrappedMap a magic one?
+     * @param sEnergy Start energy of every animal in the simulation.
+     * @param mEnergy Animal move energy cost.
+     * @param pEnergy Energy given to animals when eating single plant.
      */
-    public GameEngine(NormalMap nMap, WrappedMap wMap, boolean nMagic, boolean wMagic){
+    public GameEngine(NormalMap nMap, WrappedMap wMap, boolean nMagic, boolean wMagic, int sEnergy, int mEnergy, int pEnergy){
         normal = nMap;
         wrapped = wMap;
         normalMagic = nMagic;
         wrappedMagic = wMagic;
+        startEnergy = sEnergy;
+        moveEnergy = mEnergy;
+        plantEnergy = pEnergy;
     }
 
     @Override

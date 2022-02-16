@@ -17,7 +17,7 @@ public class Animal implements IMapElement {
     private int energy;
     private Vector2d position;
     private MapDirection direction;
-    private int [] genome;
+    private final int [] genome;
 
     /**
      * Animal default class constructor.
@@ -81,10 +81,19 @@ public class Animal implements IMapElement {
     }
 
     /**
-     * Get Vector2d value of next animal move. Value of Vector is a random pick from animals genome.
-     * @return Vector2d picked randomly from animals genes.
+     * Get int value of next animal move. Thi int is a random pick from animals genome.
+     * @return number from 0 to 7 picked randomly from animals genes.
      */
-    public Vector2d getNextMove(){
-        return MapDirection.valueOf(String.valueOf(genome[new Random().nextInt(32)])).toVector2D();
+    public int getNextMove(){
+        return genome[new Random().nextInt(32)];
     }
+
+    public void applyAnimalMove(int move){
+        if (move != 0 && move != 4){
+            direction = direction.rotate(move);
+        } else{
+            position = (move == 0? position.add(direction.toVector2D()) : position.add(direction.toVector2D().opposite()));
+        }
+    }
+
 }
