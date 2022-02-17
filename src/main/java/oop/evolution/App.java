@@ -16,6 +16,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import oop.evolution.Maps.NormalMap;
+import oop.evolution.Maps.WrappedMap;
 
 public class App extends Application {
     // TITLE AND ICON OF APP WINDOW
@@ -90,6 +92,21 @@ public class App extends Application {
     public final VBox mainVBox          = new VBox(mapWidthHBox, mapHeightHBox, jungleRatioHBox, startEnergyHBox, moveEnergyHBox, foodEnergyHBox, magicHBox, btnHBox);
     // startScene
     public final Scene startScene = new Scene(mainVBox);
+
+    //  properties of maps and simulation
+    private int     mapWidth;
+    private int     mapHeight;
+    private double  jungleRatio;
+    private int     startEnergy;
+    private int     moveEnergy;
+    private int     foodEnergy;
+    private boolean normalSimMagic;
+    private boolean wrappedSimMagic;
+
+    // maps
+    private NormalMap   normalMap;
+    private WrappedMap  wrappedMap;
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         // setting startStage properties
@@ -102,7 +119,15 @@ public class App extends Application {
         runBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                ;
+                // read values from sliders and checkBoxes
+                mapWidth        = (int) mapWidthSlider.getValue();
+                mapHeight       = (int) mapHeightSlider.getValue();
+                jungleRatio     = jungleRatioSlider.getValue();
+                startEnergy     = (int) startEnergySlider.getValue();
+                moveEnergy      = (int) moveEnergySlider.getValue();
+                foodEnergy      = (int) foodEnergySlider.getValue();
+                normalSimMagic  = magicNormalCheckbox.isSelected();
+                wrappedSimMagic = magicWrappedCheckbox.isSelected();
             }
         });
 
