@@ -12,4 +12,25 @@ public class NormalMap extends AbstractMap{
     public NormalMap(int width, int height, double jRatio){
         super(width, height, jRatio);
     }
+
+    @Override
+    public void moveAnimals() {
+        for(Animal animal : animals){
+            int moveDest = animal.getNextMove();
+            if(moveDest != 0 && moveDest != 4){
+                animal.rotateAnimal(moveDest);
+            }
+            else {
+                Vector2d animalNewPos = moveDest == 0 ? animal.getPosition().add(animal.getDirection().toVector2D()) :
+                        animal.getPosition().add(animal.getDirection().toVector2D().opposite());
+                if(canMoveTo(animalNewPos)){
+                    animal.applyMove(animalNewPos);
+                }
+            }
+        }
+    }
+
+    public boolean canMoveTo(Vector2d pos){
+        return mapLowerLeft.precedes(pos) && mapUpperRight.follows(pos);
+    }
 }
