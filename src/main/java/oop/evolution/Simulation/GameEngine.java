@@ -1,4 +1,4 @@
-package oop.evolution;
+package oop.evolution.Simulation;
 
 
 import oop.evolution.Interfaces.IEngine;
@@ -21,6 +21,8 @@ public class GameEngine implements IEngine {
     public final int startEnergy;
     public final int moveEnergy;
     public final int plantEnergy;
+
+    public static int startAnimalsNumber = 10;
 
     /**
      * Class constructor.

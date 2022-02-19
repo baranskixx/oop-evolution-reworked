@@ -2,7 +2,6 @@ package oop.evolution;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,12 +11,14 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import oop.evolution.Maps.NormalMap;
 import oop.evolution.Maps.WrappedMap;
+import oop.evolution.Simulation.GameEngine;
 
 public class App extends Application {
     // TITLE AND ICON OF APP WINDOW
@@ -91,7 +92,7 @@ public class App extends Application {
     //  mainVBox
     public final VBox mainVBox          = new VBox(mapWidthHBox, mapHeightHBox, jungleRatioHBox, startEnergyHBox, moveEnergyHBox, foodEnergyHBox, magicHBox, btnHBox);
     // startScene
-    public final Scene startScene = new Scene(mainVBox);
+    public final Scene startScene = new Scene(mainVBox, START_STAGE_WIDTH, START_STAGE_HEIGHT);
 
     //  properties of maps and simulation
     private int     mapWidth;
@@ -107,13 +108,25 @@ public class App extends Application {
     private NormalMap   normalMap;
     private WrappedMap  wrappedMap;
 
+    // engine
+    private GameEngine engine;
+
+    //SIMULATION STAGE PROPERTIES
+    public final Stage simulationStage              = new Stage();
+    public final int SIMULATION_STAGE_WIDTH         = 1000;
+    public final int SIMULATION_STAGE_HEIGHT        = 840;
+    public final boolean SIMULATION_STAGE_RESIZABLE = false;
+
+    // GridPanes used to visualize both maps
+    private GridPane normalMapGrid;
+    private GridPane wrappedMapGrid;
+
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         // setting startStage properties
         startStage.setTitle(TITLE);
         startStage.getIcons().add(ICON);
-        startStage.setWidth(START_STAGE_WIDTH);
-        startStage.setHeight(START_STAGE_HEIGHT);
         startStage.setResizable(START_STAGE_RESIZABLE);
 
         runBtn.setOnAction(new EventHandler<ActionEvent>() {
@@ -128,6 +141,10 @@ public class App extends Application {
                 foodEnergy      = (int) foodEnergySlider.getValue();
                 normalSimMagic  = magicNormalCheckbox.isSelected();
                 wrappedSimMagic = magicWrappedCheckbox.isSelected();
+
+                startStage.close();
+                prepareSimulation();
+                prepareSimulationGUI();
             }
         });
 
@@ -212,5 +229,23 @@ public class App extends Application {
         // setting properties of startStageElements
         startStage.setScene(startScene);
         startStage.show();
+    }
+
+    private void prepareSimulation(){
+        normalMap = new NormalMap(mapWidth, mapHeight, jungleRatio);
+        wrappedMap = new WrappedMap(mapWidth, mapHeight, jungleRatio);
+        engine = new GameEngine(normalMap, wrappedMap, normalSimMagic, wrappedSimMagic, startEnergy, moveEnergy, foodEnergy);
+    }
+
+    private void prepareSimulationGUI(){
+        simulationStage.getIcons().add(ICON);
+        simulationStage.setTitle(TITLE);
+        simulationStage.setWidth(SIMULATION_STAGE_WIDTH);
+        simulationStage.setHeight(SIMULATION_STAGE_HEIGHT);
+        simulationStage.setResizable(SIMULATION_STAGE_RESIZABLE);
+
+
+
+        simulationStage.show();
     }
 }

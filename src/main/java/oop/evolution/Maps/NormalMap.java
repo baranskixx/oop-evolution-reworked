@@ -1,7 +1,7 @@
 package oop.evolution.Maps;
 
 import oop.evolution.OnMapObjects.Animal;
-import oop.evolution.Vector2d;
+import oop.evolution.OnMapPositioning.Vector2d;
 
 /**
  * Class representing normal map.

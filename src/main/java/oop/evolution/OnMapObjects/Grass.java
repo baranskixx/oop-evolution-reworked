@@ -1,7 +1,7 @@
 package oop.evolution.OnMapObjects;
 
 import oop.evolution.Interfaces.IMapElement;
-import oop.evolution.Vector2d;
+import oop.evolution.OnMapPositioning.Vector2d;
 
 import java.util.Objects;
 

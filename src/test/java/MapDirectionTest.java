@@ -1,4 +1,4 @@
-import oop.evolution.MapDirection;
+import oop.evolution.OnMapPositioning.MapDirection;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

@@ -2,8 +2,8 @@ package oop.evolution.OnMapObjects;
 
 
 import oop.evolution.Interfaces.IMapElement;
-import oop.evolution.MapDirection;
-import oop.evolution.Vector2d;
+import oop.evolution.OnMapPositioning.MapDirection;
+import oop.evolution.OnMapPositioning.Vector2d;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -71,6 +71,10 @@ public class Animal implements IMapElement {
         energy += change;
     }
 
+    public MapDirection getDirection(){
+        return direction;
+    }
+
     /**
      * Get current animal position.
      * @return Vector2d - animal position.
@@ -88,12 +92,16 @@ public class Animal implements IMapElement {
         return genome[new Random().nextInt(32)];
     }
 
-    public void applyAnimalMove(int move){
-        if (move != 0 && move != 4){
-            direction = direction.rotate(move);
-        } else{
-            position = (move == 0? position.add(direction.toVector2D()) : position.add(direction.toVector2D().opposite()));
-        }
+    public void rotateAnimal(int rotation){
+        direction = direction.rotate(rotation);
+    }
+
+    public void applyMove(Vector2d newPos){
+        this.position = newPos;
+    }
+
+    public int getEnergy(){
+        return energy;
     }
 
 }

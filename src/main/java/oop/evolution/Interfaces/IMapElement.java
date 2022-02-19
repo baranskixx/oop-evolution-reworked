@@ -1,6 +1,6 @@
 package oop.evolution.Interfaces;
 
-import oop.evolution.Vector2d;
+import oop.evolution.OnMapPositioning.Vector2d;
 
 /**
  * Interface responsible for basic functionality of elements placed on the world map.

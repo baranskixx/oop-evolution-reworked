@@ -4,7 +4,7 @@ import oop.evolution.Interfaces.IPositionChangeObserver;
 import oop.evolution.Interfaces.IWorldMap;
 import oop.evolution.OnMapObjects.Animal;
 import oop.evolution.OnMapObjects.Grass;
-import oop.evolution.Vector2d;
+import oop.evolution.OnMapPositioning.Vector2d;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -135,12 +135,25 @@ public abstract class AbstractMap implements IWorldMap, IPositionChangeObserver 
 
     /**
      * Return object placed at given field.
-     * @param position The position of the object.
-     * @return
+     * @param   position The position of the field.
+     * @return  Null if there is nothing on the field, object of Grass type, if there is only plant on the field,
+     * the strongest animal on the field otherwise.
      */
     @Override
     public Object objectAt(Vector2d position) {
-        return null;
+        // Return null if there is nothing on given position
+        if (elementsOnField.get(position) == 0) return null;
+        // Return Grass object if there is only plant on given position
+        if (elementsOnField.get(position) == 1 && plants.contains(new Grass(position))) return new Grass(position);
+        // If no condition above is satisfied return the strongest animal on the field
+        Animal found = null;
+
+        for (Animal a : animals){
+            if (a.getPosition().equals(position) && (found == null || a.getEnergy() > found.getEnergy()))
+                found = a;
+        }
+        
+        return found;
     }
 
     public String toString(){

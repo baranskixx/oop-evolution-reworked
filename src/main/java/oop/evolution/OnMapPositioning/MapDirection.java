@@ -1,4 +1,4 @@
-package oop.evolution;
+package oop.evolution.OnMapPositioning;
 
 import java.util.Random;
 

@@ -1,7 +1,7 @@
 package oop.evolution.Maps;
 
 import oop.evolution.OnMapObjects.Animal;
-import oop.evolution.Vector2d;
+import oop.evolution.OnMapPositioning.Vector2d;
 
 /**
  * Map with wrapped edges. When animal crosses the border of a map it appears on opposite border.

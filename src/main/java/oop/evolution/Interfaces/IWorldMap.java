@@ -1,7 +1,7 @@
 package oop.evolution.Interfaces;
 
 import oop.evolution.OnMapObjects.Animal;
-import oop.evolution.Vector2d;
+import oop.evolution.OnMapPositioning.Vector2d;
 
 /**
  * The interface responsible for interacting with the map of the world.
