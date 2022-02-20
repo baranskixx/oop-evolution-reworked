@@ -21,6 +21,14 @@ public class WrappedMap extends AbstractMap{
             else {
                 Vector2d animalNewPos = moveDest == 0 ? adjustPos(animal.getPosition().add(animal.getDirection().toVector2D()))
                         : adjustPos(animal.getPosition().add(animal.getDirection().toVector2D().opposite()));
+                emptyFieldsJungle.remove(animalNewPos);
+                emptyFieldsSteppe.remove(animalNewPos);
+                elementsOnField.put(animal.getPosition(), elementsOnField.get(animal.getPosition()) - 1);
+                elementsOnField.put(animalNewPos, elementsOnField.get(animalNewPos) + 1);
+                if(elementsOnField.get(animal.getPosition()) == 0){
+                    if(insideJungle(animal.getPosition())) emptyFieldsJungle.add(animal.getPosition());
+                    else emptyFieldsSteppe.add(animal.getPosition());
+                }
                 animal.applyMove(animalNewPos);
             }
         }

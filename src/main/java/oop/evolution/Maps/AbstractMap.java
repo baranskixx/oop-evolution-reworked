@@ -97,8 +97,8 @@ public abstract class AbstractMap implements IWorldMap, IPositionChangeObserver 
         jungleUpperRight = new Vector2d(jRight, jTop);
 
         // fill emptyFields arrayLists and elementsOnFields LinkedHashMap
-        for (int x=0; x < jungleWidth; x++){
-            for (int y=0; y < jungleHeight; y++){
+        for (int x=0; x < mapWidth; x++){
+            for (int y=0; y < mapHeight; y++){
                 Vector2d pos = new Vector2d(x, y);
                 elementsOnField.put(pos, 0);
                 if (insideJungle(pos)){
@@ -152,7 +152,7 @@ public abstract class AbstractMap implements IWorldMap, IPositionChangeObserver 
             if (a.getPosition().equals(position) && (found == null || a.getEnergy() > found.getEnergy()))
                 found = a;
         }
-        
+
         return found;
     }
 
@@ -220,5 +220,12 @@ public abstract class AbstractMap implements IWorldMap, IPositionChangeObserver 
             elementsOnField.put(newPlantSteppePos, 1);
             plants.add(new Grass(newPlantSteppePos));
         }
+    }
+
+    /**
+     * Method responsible for simulating through next day of a simulation.
+     */
+    public void nextDay(){
+        moveAnimals();
     }
 }
