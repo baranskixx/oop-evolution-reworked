@@ -18,6 +18,7 @@ public class Animal implements IMapElement {
     private Vector2d position;
     private MapDirection direction;
     private final int [] genome;
+    private int ID;
 
     /**
      * Animal default class constructor.
@@ -103,5 +104,11 @@ public class Animal implements IMapElement {
     public int getEnergy(){
         return energy;
     }
+
+    public void setID(int id){
+        ID = id;
+    }
+
+    public int getID(){ return ID; }
 
 }
