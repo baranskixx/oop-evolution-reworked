@@ -46,6 +46,7 @@ public class GameEngine implements IEngine {
 
     @Override
     public void run() {
-        ;
+        normal.moveAnimals();
+        wrapped.moveAnimals();
     }
 }

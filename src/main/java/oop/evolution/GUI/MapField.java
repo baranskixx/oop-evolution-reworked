@@ -26,6 +26,7 @@ public class MapField {
      */
     public MapField(int size, boolean insideJungle){
         sizePx = size;
+        btn.setMinSize(sizePx, sizePx);
         btn.setPrefSize(sizePx, sizePx);
         btn.setMaxSize(sizePx, sizePx);
         if(insideJungle)    btn.setStyle(backgroundJungleStr);

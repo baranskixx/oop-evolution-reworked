@@ -1,6 +1,8 @@
 package oop.evolution;
 
+import com.sun.javafx.scene.control.SizeLimitedList;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -14,10 +16,15 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import oop.evolution.GUI.MapVisualiser;
 import oop.evolution.Maps.NormalMap;
 import oop.evolution.Maps.WrappedMap;
+import oop.evolution.OnMapObjects.Animal;
+import oop.evolution.OnMapPositioning.Vector2d;
 import oop.evolution.Simulation.GameEngine;
 
 public class App extends Application {
@@ -48,7 +55,7 @@ public class App extends Application {
     public final int    SLIDER_HEIGHT           = 20;
 
     public final int    MAP_MIN_DIMENSION           = 5;
-    public final int    MAP_MAX_DIMENSION           = 50;
+    public final int    MAP_MAX_DIMENSION           = 30;
     public final int    MAP_DIMENSION_MAJOR_TICK    = 5;
 
     public final int    MIN_START_ENERGY        = 10;
@@ -111,16 +118,19 @@ public class App extends Application {
     // engine
     private GameEngine engine;
 
-    //SIMULATION STAGE PROPERTIES
+    // SIMULATION STAGE PROPERTIES
     public final Stage simulationStage              = new Stage();
     public final int SIMULATION_STAGE_WIDTH         = 1000;
     public final int SIMULATION_STAGE_HEIGHT        = 840;
-    public final boolean SIMULATION_STAGE_RESIZABLE = false;
+    public final boolean SIMULATION_STAGE_RESIZABLE = true;
 
-    // GridPanes used to visualize both maps
-    private GridPane normalMapGrid;
-    private GridPane wrappedMapGrid;
+    // SIMULATION STAGE ELEMENTS
+    private MapVisualiser normalMapVisualiser;
+    private MapVisualiser wrappedMapVisualiser;
 
+    // SIMULATION_PROPERTIES
+    public final int SLEEP_TIME = 1000;
+    private boolean guiReady = true;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -144,7 +154,19 @@ public class App extends Application {
 
                 startStage.close();
                 prepareSimulation();
-                prepareSimulationGUI();
+                try {
+                    prepareSimulationGUI();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        startStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                startStage.close();
+                System.exit(0);
             }
         });
 
@@ -237,15 +259,83 @@ public class App extends Application {
         engine = new GameEngine(normalMap, wrappedMap, normalSimMagic, wrappedSimMagic, startEnergy, moveEnergy, foodEnergy);
     }
 
-    private void prepareSimulationGUI(){
+    private void prepareSimulationGUI() throws Exception {
+        simulationStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                simulationStage.close();
+                System.exit(0);
+            }
+        });
+
         simulationStage.getIcons().add(ICON);
         simulationStage.setTitle(TITLE);
         simulationStage.setWidth(SIMULATION_STAGE_WIDTH);
         simulationStage.setHeight(SIMULATION_STAGE_HEIGHT);
         simulationStage.setResizable(SIMULATION_STAGE_RESIZABLE);
 
+        normalMapVisualiser = new MapVisualiser(normalMap);
+        wrappedMapVisualiser = new MapVisualiser(wrappedMap);
 
-
+        updateGUI();
         simulationStage.show();
+
+        Thread threadGUI = new Thread(() -> {
+            while(true) {
+                synchronized (this) {
+                    while (!guiReady) {
+                        try {
+                            wait();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                    try {
+                        Thread.sleep(SLEEP_TIME);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println('x');
+                    Platform.runLater(() -> {
+                        updateGUI();
+                        simulationStage.show();
+                    });
+                    guiReady = false;
+                    notifyAll();
+                }
+            }
+        });
+
+        Thread simThread = new Thread(() -> {
+            while (true) {
+                synchronized (this) {
+                    while (guiReady) {
+                        try {
+                            wait();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                    System.out.println('y');
+                    engine.run();
+                    guiReady = true;
+                    notifyAll();
+                }
+            }
+        });
+        threadGUI.start();
+        simThread.start();
     }
+
+    public void updateGUI(){
+        normalMapVisualiser.refresh();
+        wrappedMapVisualiser.refresh();
+
+        HBox simHBox = new HBox(normalMapVisualiser.getMapVisualisation(), wrappedMapVisualiser.getMapVisualisation());
+        simHBox.setAlignment(Pos.TOP_CENTER);
+        simHBox.setSpacing(20);
+
+        simulationStage.setScene(new Scene(simHBox));
+    }
+
 }
