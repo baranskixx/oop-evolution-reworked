@@ -4,6 +4,8 @@ package oop.evolution.Simulation;
 import oop.evolution.Interfaces.IEngine;
 import oop.evolution.Maps.NormalMap;
 import oop.evolution.Maps.WrappedMap;
+import oop.evolution.OnMapObjects.Animal;
+import oop.evolution.OnMapPositioning.Vector2d;
 
 /**
  * Class that defines game engine used to apply all operations during the simulation:
@@ -34,7 +36,7 @@ public class GameEngine implements IEngine {
      * @param mEnergy Animal move energy cost.
      * @param pEnergy Energy given to animals when eating single plant.
      */
-    public GameEngine(NormalMap nMap, WrappedMap wMap, boolean nMagic, boolean wMagic, int sEnergy, int mEnergy, int pEnergy){
+    public GameEngine(NormalMap nMap, WrappedMap wMap, boolean nMagic, boolean wMagic, int sEnergy, int mEnergy, int pEnergy) throws Exception {
         normal = nMap;
         wrapped = wMap;
         normalMagic = nMagic;
@@ -42,11 +44,18 @@ public class GameEngine implements IEngine {
         startEnergy = sEnergy;
         moveEnergy = mEnergy;
         plantEnergy = pEnergy;
+
+        for(int i=0; i < startAnimalsNumber; i++){
+            Animal nAnimal = new Animal(startEnergy, Vector2d.generateRandomPosition(normal.jungleLowerLeft, normal.jungleUpperRight));
+            Animal wAnimal = new Animal(startEnergy, Vector2d.generateRandomPosition(normal.jungleLowerLeft, normal.jungleUpperRight));
+            normal.place(nAnimal);
+            wrapped.place(wAnimal);
+        }
     }
 
     @Override
     public void run() {
-        normal.moveAnimals();
-        wrapped.moveAnimals();
+        normal.nextDay();
+        wrapped.nextDay();
     }
 }

@@ -2,9 +2,11 @@ package oop.evolution.OnMapObjects;
 
 
 import oop.evolution.Interfaces.IMapElement;
+import oop.evolution.Interfaces.IPositionChangeObserver;
 import oop.evolution.OnMapPositioning.MapDirection;
 import oop.evolution.OnMapPositioning.Vector2d;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -19,6 +21,7 @@ public class Animal implements IMapElement {
     private MapDirection direction;
     private final int [] genome;
     private int ID;
+    private ArrayList<IPositionChangeObserver> observers = new ArrayList<>();
 
     /**
      * Animal default class constructor.
@@ -98,17 +101,48 @@ public class Animal implements IMapElement {
     }
 
     public void applyMove(Vector2d newPos){
+        moveInformObservers(position, newPos);
         this.position = newPos;
     }
 
+    /**
+     * Getter for energy attribute.
+     * @return Current energy of the animal.
+     */
     public int getEnergy(){
         return energy;
     }
 
+    /**
+     * Setter for ID attribute.
+     * @param id New animal ID.
+     */
     public void setID(int id){
         ID = id;
     }
 
+    /**
+     * Getter for ID attribute.
+     * @return ID number of animal.
+     */
     public int getID(){ return ID; }
 
+    /**
+     * Add a new Observer. Observer now will be informed about every move of this animal.
+     * @param observer New observer tracking animal's moves.
+     */
+    public void addObserver(IPositionChangeObserver observer){
+        observers.add(observer);
+    }
+
+    /**
+     * Inform all observers of the animal about movement.
+     * @param oldPos Position from which animal moved.
+     * @param newPos Position animal moved to.
+     */
+    public void moveInformObservers(Vector2d oldPos, Vector2d newPos){
+        for(IPositionChangeObserver ob : observers){
+            ob.positionChanged(oldPos, newPos);
+        }
+    }
 }

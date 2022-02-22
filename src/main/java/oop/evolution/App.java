@@ -153,7 +153,11 @@ public class App extends Application {
                 wrappedSimMagic = magicWrappedCheckbox.isSelected();
 
                 startStage.close();
-                prepareSimulation();
+                try {
+                    prepareSimulation();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 try {
                     prepareSimulationGUI();
                 } catch (Exception e) {
@@ -253,7 +257,7 @@ public class App extends Application {
         startStage.show();
     }
 
-    private void prepareSimulation(){
+    private void prepareSimulation() throws Exception {
         normalMap = new NormalMap(mapWidth, mapHeight, jungleRatio);
         wrappedMap = new WrappedMap(mapWidth, mapHeight, jungleRatio);
         engine = new GameEngine(normalMap, wrappedMap, normalSimMagic, wrappedSimMagic, startEnergy, moveEnergy, foodEnergy);
@@ -295,7 +299,6 @@ public class App extends Application {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    System.out.println('x');
                     Platform.runLater(() -> {
                         updateGUI();
                         simulationStage.show();
@@ -316,7 +319,6 @@ public class App extends Application {
                             ex.printStackTrace();
                         }
                     }
-                    System.out.println('y');
                     engine.run();
                     guiReady = true;
                     notifyAll();

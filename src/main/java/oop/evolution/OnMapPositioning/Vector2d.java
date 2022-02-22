@@ -1,6 +1,7 @@
 package oop.evolution.OnMapPositioning;
 
 import java.util.Objects;
+import java.util.Random;
 
 /**
  * Representation of objects positions on the map.
@@ -112,5 +113,15 @@ public class Vector2d {
     @Override
     public int hashCode(){
         return Objects.hash(this.x, this.y);
+    }
+
+    /**
+     * Randomly choose position.
+     * @param lowLeft Position that generated vector has to follow.
+     * @param upRight Position that generated vector has to precede.
+     */
+    public static Vector2d generateRandomPosition(Vector2d lowLeft, Vector2d upRight){
+        return new Vector2d(new Random().nextInt(lowLeft.y, upRight.y + 1),
+                new Random().nextInt(lowLeft.x, upRight.x + 1));
     }
 }

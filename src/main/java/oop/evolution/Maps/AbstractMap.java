@@ -27,6 +27,7 @@ public abstract class AbstractMap implements IWorldMap, IPositionChangeObserver 
 
     protected int animalsCnt = 0;
     protected int plantsCnt  = 0;
+    protected int allTimeAnimals = 0;
 
     protected ArrayList<Vector2d> emptyFieldsJungle = new ArrayList<>();
     protected ArrayList<Vector2d> emptyFieldsSteppe = new ArrayList<>();
@@ -116,14 +117,17 @@ public abstract class AbstractMap implements IWorldMap, IPositionChangeObserver 
         if (!onMap(animalPos)){
             return false;
         } else {
-            animalsCnt++;
             animals.add(animal);
+            animal.setID(allTimeAnimals);
+            animalsCnt++;
+            allTimeAnimals++;
             elementsOnField.put(animalPos, elementsOnField.get(animalPos) + 1);
             if(insideJungle(animalPos)){
                 emptyFieldsJungle.remove(animalPos);
             } else {
                 emptyFieldsSteppe.remove(animalPos);
             }
+            animal.addObserver(this);
             return true;
         }
     }
@@ -152,7 +156,6 @@ public abstract class AbstractMap implements IWorldMap, IPositionChangeObserver 
             if (a.getPosition().equals(position) && (found == null || a.getEnergy() > found.getEnergy()))
                 found = a;
         }
-
         return found;
     }
 
@@ -227,5 +230,6 @@ public abstract class AbstractMap implements IWorldMap, IPositionChangeObserver 
      */
     public void nextDay(){
         moveAnimals();
+        addPlants();
     }
 }
