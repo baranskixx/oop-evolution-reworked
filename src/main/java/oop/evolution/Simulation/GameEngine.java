@@ -26,6 +26,9 @@ public class GameEngine implements IEngine {
 
     public static int startAnimalsNumber = 10;
 
+    private boolean normalStop = false;
+    private boolean wrappedStop = false;
+
     /**
      * Class constructor.
      * @param nMap NormalMap to run simulation on.
@@ -55,8 +58,23 @@ public class GameEngine implements IEngine {
 
     @Override
     public void run() {
-        normal.nextDay();
-        wrapped.nextDay();
+        if (!normalStop) normal.nextDay();
+        if (!wrappedStop) wrapped.nextDay();
     }
 
+    public void changeWrappedStop(){
+        wrappedStop = !wrappedStop;
+    }
+
+    public void changeNormalStop(){
+        normalStop = !normalStop;
+    }
+
+    public boolean getWrappedStop(){
+        return wrappedStop;
+    }
+
+    public boolean getNormalStop(){
+        return normalStop;
+    }
 }

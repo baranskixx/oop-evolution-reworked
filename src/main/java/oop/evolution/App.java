@@ -137,8 +137,12 @@ public class App extends Application {
     private Graph wrappedMapAnimalsAlive = new Graph("Day", "Animals Alive", 200, 200);
     private Graph wrappedMapPlants       = new Graph("Day", "Plants", 200, 200);
 
+    // BUTTONS
+    private Button pauseNormalSim   = new Button("Pause");
+    private Button pauseWrappedSim  = new Button("Pause");
+
     // SIMULATION_PROPERTIES
-    public final int SLEEP_TIME = 1000;
+    public final int SLEEP_TIME = 500;
     private boolean guiReady = true;
 
     @Override
@@ -281,6 +285,21 @@ public class App extends Application {
             }
         });
 
+        pauseWrappedSim.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                engine.changeWrappedStop();
+            }
+        });
+
+        pauseNormalSim.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                engine.changeNormalStop();
+            }
+        });
+
+
         simulationStage.getIcons().add(ICON);
         simulationStage.setTitle(TITLE);
         simulationStage.setWidth(SIMULATION_STAGE_WIDTH);
@@ -311,6 +330,11 @@ public class App extends Application {
                     guiReady = false;
                     notifyAll();
                 }
+                try {
+                    Thread.sleep(SLEEP_TIME);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -323,11 +347,6 @@ public class App extends Application {
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
-                    }
-                    try {
-                        Thread.sleep(SLEEP_TIME);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
                     }
                     engine.run();
                     guiReady = true;
@@ -347,6 +366,11 @@ public class App extends Application {
         simHBox.setAlignment(Pos.TOP_CENTER);
         simHBox.setSpacing(20);
 
+        HBox pauseBtnBox = new HBox(pauseNormalSim, pauseWrappedSim);
+        pauseBtnBox.setSpacing(200);
+        pauseBtnBox.setAlignment(Pos.CENTER);
+        pauseBtnBox.setPadding(new Insets(30));
+
         HBox normalChartsHBox = new HBox(normalMapAnimalsAlive.getLineChart(), normalMapPlants.getLineChart());
         normalChartsHBox.setSpacing(10);
         HBox wrappedChartsHBox = new HBox(wrappedMapAnimalsAlive.getLineChart(), wrappedMapPlants.getLineChart());
@@ -355,14 +379,18 @@ public class App extends Application {
         chartsHBox.setSpacing(20);
         chartsHBox.setAlignment(Pos.BASELINE_CENTER);
 
-        mainVBox = new VBox(simHBox, chartsHBox);
+        mainVBox = new VBox(simHBox, pauseBtnBox, chartsHBox);
         simulationStage.setScene(new Scene(mainVBox));
     }
 
     public void updateCharts(){
-        normalMapAnimalsAlive.updateData(normalMap.getDays(), normalMap.getAnimalsCnt());
-        wrappedMapAnimalsAlive.updateData(wrappedMap.getDays(), wrappedMap.getAnimalsCnt());
-        normalMapPlants.updateData(normalMap.getDays(), normalMap.getPlantsCnt());
-        wrappedMapPlants.updateData(wrappedMap.getDays(), wrappedMap.getPlantsCnt());
+        if(!engine.getNormalStop()) {
+            normalMapAnimalsAlive.updateData(normalMap.getDays(), normalMap.getAnimalsCnt());
+            normalMapPlants.updateData(normalMap.getDays(), normalMap.getPlantsCnt());
+        }
+        if(!engine.getWrappedStop()) {
+            wrappedMapAnimalsAlive.updateData(wrappedMap.getDays(), wrappedMap.getAnimalsCnt());
+            wrappedMapPlants.updateData(wrappedMap.getDays(), wrappedMap.getPlantsCnt());
+        }
     }
 }
