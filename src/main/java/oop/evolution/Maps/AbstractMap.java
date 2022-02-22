@@ -160,6 +160,10 @@ public abstract class AbstractMap implements IWorldMap, IPositionChangeObserver 
         return found;
     }
 
+    /**
+     * Get information about map in a string format.
+     * @return String with information about map size, jungle size etc.
+     */
     public String toString(){
         return "Wymiary mapy: " + mapWidth + "x" + mapHeight +
                 "\nLewy dolny punkt mapy: " + mapLowerLeft +
@@ -231,10 +235,13 @@ public abstract class AbstractMap implements IWorldMap, IPositionChangeObserver 
     /**
      * Method responsible for simulating through next day of a simulation.
      */
-    public void nextDay(){
+    public void nextDay(int moveEnergy, int foodEnergy){
         days++;
         moveAnimals();
+        eating(foodEnergy);
+        decreaseAnimalsEnergy(moveEnergy);
         addPlants();
+        removeDeadAnimals();
     }
 
     /**
@@ -244,11 +251,83 @@ public abstract class AbstractMap implements IWorldMap, IPositionChangeObserver 
         return days;
     }
 
+    /**
+     * Get number of animals.
+     * @return Number of alive animals.
+     */
     public int getAnimalsCnt(){
         return animalsCnt;
     }
 
+    /**
+     * Get number of plants.
+     * @return Number of plants on the map.
+     */
     public int getPlantsCnt(){
         return plantsCnt;
+    }
+
+    /**
+     * Remove from map every animal with energy level equal to zero.
+     */
+    public void removeDeadAnimals(){
+        for(Animal animal : animals){
+            if(animal.getEnergy() == 0){
+                animalsCnt--;
+                Vector2d oldPos = animal.getPosition();
+
+                elementsOnField.put(oldPos, elementsOnField.get(oldPos) - 1);
+
+                if (elementsOnField.get(oldPos) == 0){
+                    if(insideJungle(oldPos)) emptyFieldsJungle.add(oldPos);
+                    else emptyFieldsSteppe.add(oldPos);
+                }
+            }
+        }
+        animals.removeIf(animal -> animal.getEnergy() == 0);
+    }
+
+    /**
+     * Decrease energy of every animal on the map by given value.
+     * @param energyVal
+     */
+    public void decreaseAnimalsEnergy(int energyVal){
+        for(Animal animal : animals){
+            animal.changeEnergyLevel(-energyVal);
+        }
+    }
+
+    /**
+     * Handle animals eating grass. Grass is eaten only, when there is an animal on the same field.
+     * Strongest animal on the field eats. If there is more than one strongest animal on the field
+     * every animal with the highest energy level eats, splitting the energy coming from plant to
+     * all strongest animals.
+     * @param foodEnergy Energy contained in every plant.
+     */
+    public void eating(int foodEnergy){
+        for(Grass plant : plants){
+            if(elementsOnField.get(plant.getPosition()) != 1){
+                ArrayList<Animal> strongest = findAsStrongAnimals((Animal) objectAt(plant.getPosition()));
+                for(Animal a : strongest){
+                    a.changeEnergyLevel(foodEnergy / strongest.size());
+                }
+            }
+        }
+    }
+
+    /**
+     * Find all animals as strong as given animal on the same field as given animal.
+     * @param strongestAnimal Compared animal.
+     * @return ArrayList of animals as strong as one given as strongestAnimal.
+     */
+    public ArrayList<Animal> findAsStrongAnimals(Animal strongestAnimal){
+        ArrayList<Animal> strongestList = new ArrayList<>();
+        strongestList.add(strongestAnimal);
+
+        for(Animal a : animals){
+            if(a.getEnergy() == strongestAnimal.getEnergy() && a.getPosition() == strongestAnimal.getPosition()
+                    && !a.equals(strongestAnimal)) strongestList.add(a);
+        }
+        return strongestList;
     }
 }

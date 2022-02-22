@@ -72,7 +72,7 @@ public class Animal implements IMapElement {
      * @param change Value added to animal energy (can be negative).
      */
     public void changeEnergyLevel(int change){
-        energy += change;
+        energy = Math.max(energy + change, 0);
     }
 
     public MapDirection getDirection(){
@@ -144,5 +144,12 @@ public class Animal implements IMapElement {
         for(IPositionChangeObserver ob : observers){
             ob.positionChanged(oldPos, newPos);
         }
+    }
+
+    /**
+     * Animals equals when they have same ID.
+     */
+    public boolean equals(Animal other){
+        return (this.ID == other.getID());
     }
 }

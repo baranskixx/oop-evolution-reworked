@@ -11,7 +11,7 @@ import oop.evolution.OnMapPositioning.Vector2d;
 
 public interface IPositionChangeObserver{
     /**
-     * Define how observer should behave when observed animal made a move.
+     * Define how observer should behave when observed animal makes a move.
      * @param oldPos Position from which animal moved.
      * @param newPos Destination of animal move.
      */
