@@ -58,4 +58,5 @@ public class GameEngine implements IEngine {
         normal.nextDay();
         wrapped.nextDay();
     }
+
 }

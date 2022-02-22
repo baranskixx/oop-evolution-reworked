@@ -25,9 +25,10 @@ public abstract class AbstractMap implements IWorldMap, IPositionChangeObserver 
     public final Vector2d mapLowerLeft, mapUpperRight;
     public final Vector2d jungleLowerLeft, jungleUpperRight;
 
-    protected int animalsCnt = 0;
-    protected int plantsCnt  = 0;
-    protected int allTimeAnimals = 0;
+    protected int animalsCnt        = 0;
+    protected int plantsCnt         = 0;
+    protected int allTimeAnimals    = 0;
+    protected int days              = 0;
 
     protected ArrayList<Vector2d> emptyFieldsJungle = new ArrayList<>();
     protected ArrayList<Vector2d> emptyFieldsSteppe = new ArrayList<>();
@@ -217,11 +218,13 @@ public abstract class AbstractMap implements IWorldMap, IPositionChangeObserver 
             Vector2d newPlantJunglePos = emptyFieldsJungle.remove(new Random().nextInt(emptyFieldsJungle.size()));
             elementsOnField.put(newPlantJunglePos, 1);
             plants.add(new Grass(newPlantJunglePos));
+            plantsCnt++;
         }
         if(emptyFieldsSteppe.size() != 0){
             Vector2d newPlantSteppePos = emptyFieldsSteppe.remove(new Random().nextInt(emptyFieldsSteppe.size()));
             elementsOnField.put(newPlantSteppePos, 1);
             plants.add(new Grass(newPlantSteppePos));
+            plantsCnt++;
         }
     }
 
@@ -229,7 +232,23 @@ public abstract class AbstractMap implements IWorldMap, IPositionChangeObserver 
      * Method responsible for simulating through next day of a simulation.
      */
     public void nextDay(){
+        days++;
         moveAnimals();
         addPlants();
+    }
+
+    /**
+     * Days counter value getter.
+     */
+    public int getDays(){
+        return days;
+    }
+
+    public int getAnimalsCnt(){
+        return animalsCnt;
+    }
+
+    public int getPlantsCnt(){
+        return plantsCnt;
     }
 }

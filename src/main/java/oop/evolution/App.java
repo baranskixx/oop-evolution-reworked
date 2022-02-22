@@ -20,6 +20,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import oop.evolution.GUI.Graph;
 import oop.evolution.GUI.MapVisualiser;
 import oop.evolution.Maps.NormalMap;
 import oop.evolution.Maps.WrappedMap;
@@ -97,7 +98,7 @@ public class App extends Application {
     public final HBox magicHBox         = new HBox(magicNormalCheckbox, magicWrappedCheckbox);
     public final HBox btnHBox           = new HBox(runBtn);
     //  mainVBox
-    public final VBox mainVBox          = new VBox(mapWidthHBox, mapHeightHBox, jungleRatioHBox, startEnergyHBox, moveEnergyHBox, foodEnergyHBox, magicHBox, btnHBox);
+    public VBox mainVBox          = new VBox(mapWidthHBox, mapHeightHBox, jungleRatioHBox, startEnergyHBox, moveEnergyHBox, foodEnergyHBox, magicHBox, btnHBox);
     // startScene
     public final Scene startScene = new Scene(mainVBox, START_STAGE_WIDTH, START_STAGE_HEIGHT);
 
@@ -120,13 +121,21 @@ public class App extends Application {
 
     // SIMULATION STAGE PROPERTIES
     public final Stage simulationStage              = new Stage();
-    public final int SIMULATION_STAGE_WIDTH         = 1000;
-    public final int SIMULATION_STAGE_HEIGHT        = 840;
+    public final int SIMULATION_STAGE_WIDTH         = 1200;
+    public final int SIMULATION_STAGE_HEIGHT        = 1000;
     public final boolean SIMULATION_STAGE_RESIZABLE = true;
 
     // SIMULATION STAGE ELEMENTS
     private MapVisualiser normalMapVisualiser;
     private MapVisualiser wrappedMapVisualiser;
+
+    // NORMAL MAP GRAPHS
+    private Graph normalMapAnimalsAlive = new Graph("Day", "Animals Alive", 200, 200);
+    private Graph normalMapPlants       = new Graph("Day", "Plants", 200, 200);
+
+    // WRAPPED MAP GRAPHS
+    private Graph wrappedMapAnimalsAlive = new Graph("Day", "Animals Alive", 200, 200);
+    private Graph wrappedMapPlants       = new Graph("Day", "Plants", 200, 200);
 
     // SIMULATION_PROPERTIES
     public final int SLEEP_TIME = 1000;
@@ -294,12 +303,8 @@ public class App extends Application {
                             ex.printStackTrace();
                         }
                     }
-                    try {
-                        Thread.sleep(SLEEP_TIME);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
                     Platform.runLater(() -> {
+                        updateCharts();
                         updateGUI();
                         simulationStage.show();
                     });
@@ -319,6 +324,11 @@ public class App extends Application {
                             ex.printStackTrace();
                         }
                     }
+                    try {
+                        Thread.sleep(SLEEP_TIME);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     engine.run();
                     guiReady = true;
                     notifyAll();
@@ -337,7 +347,22 @@ public class App extends Application {
         simHBox.setAlignment(Pos.TOP_CENTER);
         simHBox.setSpacing(20);
 
-        simulationStage.setScene(new Scene(simHBox));
+        HBox normalChartsHBox = new HBox(normalMapAnimalsAlive.getLineChart(), normalMapPlants.getLineChart());
+        normalChartsHBox.setSpacing(10);
+        HBox wrappedChartsHBox = new HBox(wrappedMapAnimalsAlive.getLineChart(), wrappedMapPlants.getLineChart());
+        wrappedChartsHBox.setSpacing(10);
+        HBox chartsHBox = new HBox(normalChartsHBox, wrappedChartsHBox);
+        chartsHBox.setSpacing(20);
+        chartsHBox.setAlignment(Pos.BASELINE_CENTER);
+
+        mainVBox = new VBox(simHBox, chartsHBox);
+        simulationStage.setScene(new Scene(mainVBox));
     }
 
+    public void updateCharts(){
+        normalMapAnimalsAlive.updateData(normalMap.getDays(), normalMap.getAnimalsCnt());
+        wrappedMapAnimalsAlive.updateData(wrappedMap.getDays(), wrappedMap.getAnimalsCnt());
+        normalMapPlants.updateData(normalMap.getDays(), normalMap.getPlantsCnt());
+        wrappedMapPlants.updateData(wrappedMap.getDays(), wrappedMap.getPlantsCnt());
+    }
 }
