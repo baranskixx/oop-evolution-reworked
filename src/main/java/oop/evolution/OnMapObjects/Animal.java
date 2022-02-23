@@ -152,4 +152,29 @@ public class Animal implements IMapElement {
     public boolean equals(Animal other){
         return (this.ID == other.getID());
     }
+
+    public int[] getGenome(){
+        return genome;
+    }
+
+    public Animal copulate (Animal matePartner) throws Exception {
+        int sumEnergy = this.getEnergy() + matePartner.getEnergy();
+
+        int genesFromPartner = ((int)(matePartner.getEnergy() / sumEnergy)) * 32;
+        int partnerSide = new Random().nextInt(2) + 1;
+        int [] newGenome = new int[32];
+
+        if(partnerSide == 2){
+            System.arraycopy(this.getGenome(), 0, newGenome, 0, 32 - genesFromPartner);
+            System.arraycopy(matePartner.getGenome(), 32-genesFromPartner, newGenome, 32-genesFromPartner, genesFromPartner);
+        } else{
+            System.arraycopy(matePartner.getGenome(), 0, newGenome, 0, genesFromPartner);
+            System.arraycopy(this.getGenome(), genesFromPartner, newGenome, genesFromPartner, 32-genesFromPartner);
+        }
+
+        this.changeEnergyLevel((int)(this.energy * (-0.25)));
+        matePartner.changeEnergyLevel((int)(matePartner.getEnergy() * (-0.25)));
+
+        return new Animal((int)(sumEnergy * 0.25), this.position, newGenome);
+    }
 }

@@ -68,9 +68,9 @@ public class App extends Application {
     public final double MAX_JUNGLE_RATIO        = 0.9;
     public final double JUNGLE_RATIO_MAJOR_TICK = 0.1;
 
-    public final int    MIN_MOVE_ENERGY         = 5;
+    public final int    MIN_MOVE_ENERGY         = 0;
     public final int    MAX_MOVE_ENERGY         = 50;
-    public final int    MOVE_ENERGY_MAJOR_TICK  = 5;
+    public final int    MOVE_ENERGY_MAJOR_TICK  = 10;
 
     public final int    MIN_FOOD_ENERGY         = 5;
     public final int    MAX_FOOD_ENERGY         = 50;
@@ -219,7 +219,7 @@ public class App extends Application {
         startEnergySlider.setShowTickMarks(true);
 
         moveEnergySlider.setMajorTickUnit(MOVE_ENERGY_MAJOR_TICK);
-        moveEnergySlider.setMinorTickCount(4);
+        moveEnergySlider.setMinorTickCount(9);
         moveEnergySlider.setSnapToTicks(true);
         moveEnergySlider.setShowTickLabels(true);
         moveEnergySlider.setShowTickMarks(true);

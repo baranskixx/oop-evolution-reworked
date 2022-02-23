@@ -235,11 +235,12 @@ public abstract class AbstractMap implements IWorldMap, IPositionChangeObserver 
     /**
      * Method responsible for simulating through next day of a simulation.
      */
-    public void nextDay(int moveEnergy, int foodEnergy){
+    public void nextDay(int moveEnergy, int foodEnergy, int startEnergy) throws Exception {
         days++;
         moveAnimals();
-        eating(foodEnergy);
         decreaseAnimalsEnergy(moveEnergy);
+        eating(foodEnergy);
+        copulation(startEnergy);
         addPlants();
         removeDeadAnimals();
     }
@@ -305,13 +306,21 @@ public abstract class AbstractMap implements IWorldMap, IPositionChangeObserver 
      * @param foodEnergy Energy contained in every plant.
      */
     public void eating(int foodEnergy){
+        ArrayList<Grass> deletedPlants = new ArrayList<>();
         for(Grass plant : plants){
             if(elementsOnField.get(plant.getPosition()) != 1){
                 ArrayList<Animal> strongest = findAsStrongAnimals((Animal) objectAt(plant.getPosition()));
                 for(Animal a : strongest){
                     a.changeEnergyLevel(foodEnergy / strongest.size());
                 }
+                plantsCnt--;
+                elementsOnField.put(plant.getPosition(), elementsOnField.get(plant.getPosition()) - 1);
+                deletedPlants.add(plant);
             }
+        }
+
+        for(Grass plant : deletedPlants){
+            plants.remove(plant);
         }
     }
 
@@ -329,5 +338,38 @@ public abstract class AbstractMap implements IWorldMap, IPositionChangeObserver 
                     && !a.equals(strongestAnimal)) strongestList.add(a);
         }
         return strongestList;
+    }
+
+    /**
+     * Handle the copulation of animals.
+     * @param startEnergy Start energy of first animals on map.
+     */
+    public void copulation(int startEnergy) throws Exception {
+        ArrayList<Animal> children = new ArrayList<>();
+        for(int x=0; x < mapWidth; x++){
+            for(int y=0; y < mapHeight; y++){
+                Vector2d pos = new Vector2d(x, y);
+
+                if(elementsOnField.get(pos) >= 2){
+                    Animal strongest = null;
+                    Animal secondStrongest = null;
+
+                    for(Animal animal : animals){
+                        if(animal.getPosition().equals(pos)){
+                            if (strongest == null || strongest.getEnergy() < animal.getEnergy()){
+                                secondStrongest = strongest;
+                                strongest = animal;
+                            } else if (secondStrongest == null || secondStrongest.getEnergy() < animal.getEnergy()){
+                                secondStrongest = animal;
+                            }
+                        }
+                    }
+                    if(secondStrongest.getEnergy() >= startEnergy / 2)
+                        children.add(strongest.copulate(secondStrongest));
+                }
+            }
+        }
+        for (Animal child : children)
+            this.place(child);
     }
 }

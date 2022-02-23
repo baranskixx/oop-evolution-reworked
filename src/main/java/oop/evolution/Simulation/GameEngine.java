@@ -58,8 +58,13 @@ public class GameEngine implements IEngine {
 
     @Override
     public void run() {
-        if (!normalStop) normal.nextDay(moveEnergy, plantEnergy);
-        if (!wrappedStop) wrapped.nextDay(moveEnergy, plantEnergy);
+        try {
+            if (!normalStop) normal.nextDay(moveEnergy, plantEnergy, startEnergy);
+            if (!wrappedStop) wrapped.nextDay(moveEnergy, plantEnergy, startEnergy);
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
     }
 
     public void changeWrappedStop(){
