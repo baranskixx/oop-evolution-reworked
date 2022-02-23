@@ -17,7 +17,7 @@ import java.util.Random;
  * @author baranskia
  *
  */
-public abstract class AbstractMap implements IWorldMap, IPositionChangeObserver {
+public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver {
     // map and jungle size
     public final int mapWidth, mapHeight;
     public final double jungleRatio;
@@ -42,7 +42,7 @@ public abstract class AbstractMap implements IWorldMap, IPositionChangeObserver 
      * @param height Number of fields in single column of a map.
      * @param jRatio How many % of map fields are set as a jungle.
      */
-    public AbstractMap(int width, int height, double jRatio){
+    public AbstractWorldMap(int width, int height, double jRatio){
         mapWidth = width;
         mapHeight = height;
         jungleRatio = jRatio;

@@ -1,9 +1,8 @@
 package oop.evolution.GUI;
 
-import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
-import oop.evolution.Maps.AbstractMap;
+import oop.evolution.Maps.AbstractWorldMap;
 import oop.evolution.OnMapObjects.Grass;
 import oop.evolution.OnMapPositioning.Vector2d;
 
@@ -19,10 +18,10 @@ public class MapVisualiser {
     public final static int MAP_GRID_SIZE = 440;
     public final int FIELD_SIZE;
 
-    private AbstractMap map;
+    private AbstractWorldMap map;
     private LinkedHashMap<Vector2d, MapField> mapFields = new LinkedHashMap<>();
     
-    public MapVisualiser(AbstractMap m){
+    public MapVisualiser(AbstractWorldMap m){
         map = m;
         FIELD_SIZE = MAP_GRID_SIZE / Math.max(map.mapWidth, map.mapHeight);
 

@@ -5,8 +5,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import oop.evolution.Maps.AbstractMap;
-import oop.evolution.OnMapPositioning.Vector2d;
 
 /**
  * Class responsible for visualisation of single mapField.
@@ -33,6 +31,10 @@ public class MapField {
         else                btn.setStyle(backgroundSteppeStr);
     }
 
+    /**
+     * Set given Img as new Button's image.
+     * @param newImg Image to be set as button's image. Can be null.
+     */
     public void updateView(Image newImg){
         if(newImg != null){
             imgView.setImage(newImg);
@@ -43,6 +45,10 @@ public class MapField {
         } else btn.setGraphic(null);
     }
 
+    /**
+     * Get the button representing this map field.
+     * @return Button object.
+     */
     public Node getView(){
         return btn;
     }

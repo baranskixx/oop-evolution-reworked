@@ -7,7 +7,7 @@ import oop.evolution.OnMapPositioning.Vector2d;
  * Class representing normal map.
  * Normal Map is fenced and animals can't make a move outside a map.
  */
-public class NormalMap extends AbstractMap{
+public class NormalMap extends AbstractWorldMap {
 
     public NormalMap(int width, int height, double jRatio){
         super(width, height, jRatio);

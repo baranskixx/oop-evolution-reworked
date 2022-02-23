@@ -153,10 +153,20 @@ public class Animal implements IMapElement {
         return (this.ID == other.getID());
     }
 
+    /**
+     * Animal's genome getter.
+     * @return Genome of the animal - int [32] array.
+     */
     public int[] getGenome(){
         return genome;
     }
 
+    /**
+     * Make this animal copulate with another. Function returns new Animal - child.
+     * Asserts that animals are on the same field on the map and both parents have non-zero energy level.
+     * @param matePartner Partner for this animal to copulate with.
+     * @return Child of two given animals.
+     */
     public Animal copulate (Animal matePartner) throws Exception {
         int sumEnergy = this.getEnergy() + matePartner.getEnergy();
 
