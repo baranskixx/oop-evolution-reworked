@@ -1,6 +1,5 @@
 package oop.evolution;
 
-import com.sun.javafx.scene.control.SizeLimitedList;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -13,10 +12,8 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -24,9 +21,9 @@ import oop.evolution.GUI.Graph;
 import oop.evolution.GUI.MapVisualiser;
 import oop.evolution.Maps.NormalMap;
 import oop.evolution.Maps.WrappedMap;
-import oop.evolution.OnMapObjects.Animal;
-import oop.evolution.OnMapPositioning.Vector2d;
 import oop.evolution.Simulation.GameEngine;
+
+import java.io.IOException;
 
 public class App extends Application {
     // TITLE AND ICON OF APP WINDOW
@@ -130,20 +127,26 @@ public class App extends Application {
     private MapVisualiser wrappedMapVisualiser;
 
     // NORMAL MAP GRAPHS
-    private Graph normalMapAnimalsAlive = new Graph("Day", "Animals Alive", 200, 200);
-    private Graph normalMapPlants       = new Graph("Day", "Plants", 200, 200);
+    private final Graph normalMapAnimalsAlive = new Graph("Day", "Animals Alive", 200, 200);
+    private final Graph normalMapPlants       = new Graph("Day", "Plants", 200, 200);
 
     // WRAPPED MAP GRAPHS
-    private Graph wrappedMapAnimalsAlive = new Graph("Day", "Animals Alive", 200, 200);
-    private Graph wrappedMapPlants       = new Graph("Day", "Plants", 200, 200);
+    private final Graph wrappedMapAnimalsAlive = new Graph("Day", "Animals Alive", 200, 200);
+    private final Graph wrappedMapPlants       = new Graph("Day", "Plants", 200, 200);
 
     // BUTTONS
-    private Button pauseNormalSim   = new Button("Pause");
-    private Button pauseWrappedSim  = new Button("Pause");
+    private final Button pauseNormalSimBtn  = new Button("Pause");
+    private final Button pauseWrappedSimBtn = new Button("Pause");
+    private final Button toCsvNormalBtn     = new Button("Save to CSV");
+    private final Button toCsvWrappedBtn    = new Button("Save to CSV");
 
     // SIMULATION_PROPERTIES
     public final int SLEEP_TIME = 500;
     private boolean guiReady = true;
+
+    // CSV WRITING PROPERTIES
+    private boolean saveNormalCsv = false;
+    private boolean saveWrappedCsv = false;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -281,24 +284,49 @@ public class App extends Application {
             @Override
             public void handle(WindowEvent event) {
                 simulationStage.close();
+                try {
+                    CsvWriter.closeCSV(saveNormalCsv, saveWrappedCsv);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 System.exit(0);
             }
         });
 
-        pauseWrappedSim.setOnAction(new EventHandler<ActionEvent>() {
+        pauseWrappedSimBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 engine.changeWrappedStop();
+                if(!saveWrappedCsv) toCsvWrappedBtn.setDisable(!toCsvWrappedBtn.isDisable());
             }
         });
 
-        pauseNormalSim.setOnAction(new EventHandler<ActionEvent>() {
+        pauseNormalSimBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 engine.changeNormalStop();
+                if(!saveNormalCsv)  toCsvNormalBtn.setDisable(!toCsvNormalBtn.isDisable());
             }
         });
 
+        toCsvNormalBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                saveNormalCsv = true;
+                toCsvNormalBtn.setDisable(true);
+            }
+        });
+
+        toCsvWrappedBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                saveWrappedCsv = true;
+                toCsvWrappedBtn.setDisable(true);
+            }
+        });
+
+        toCsvNormalBtn.setDisable(true);
+        toCsvWrappedBtn.setDisable(true);
 
         simulationStage.getIcons().add(ICON);
         simulationStage.setTitle(TITLE);
@@ -348,6 +376,18 @@ public class App extends Application {
                             ex.printStackTrace();
                         }
                     }
+                    try {
+                        if (saveNormalCsv && !engine.getNormalStop()) {
+                            System.out.println('a');
+                            CsvWriter.appendCsvNormal(normalMap);
+                        }
+                        if (saveWrappedCsv && !engine.getWrappedStop()){
+                            System.out.println('b');
+                            CsvWriter.appendCsvWrapped(wrappedMap);
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                     engine.run();
                     guiReady = true;
                     notifyAll();
@@ -366,10 +406,16 @@ public class App extends Application {
         simHBox.setAlignment(Pos.TOP_CENTER);
         simHBox.setSpacing(20);
 
-        HBox pauseBtnBox = new HBox(pauseNormalSim, pauseWrappedSim);
-        pauseBtnBox.setSpacing(200);
-        pauseBtnBox.setAlignment(Pos.CENTER);
-        pauseBtnBox.setPadding(new Insets(30));
+        HBox normalBtnHBox = new HBox(pauseNormalSimBtn, toCsvNormalBtn);
+        normalBtnHBox.setSpacing(30);
+
+        HBox wrappedBtnHBox = new HBox(pauseWrappedSimBtn, toCsvWrappedBtn);
+        wrappedBtnHBox.setSpacing(30);
+
+        HBox btnBox = new HBox(normalBtnHBox, wrappedBtnHBox);
+        btnBox.setSpacing(120);
+        btnBox.setAlignment(Pos.CENTER);
+        btnBox.setPadding(new Insets(30));
 
         HBox normalChartsHBox = new HBox(normalMapAnimalsAlive.getLineChart(), normalMapPlants.getLineChart());
         normalChartsHBox.setSpacing(10);
@@ -379,7 +425,8 @@ public class App extends Application {
         chartsHBox.setSpacing(20);
         chartsHBox.setAlignment(Pos.BASELINE_CENTER);
 
-        mainVBox = new VBox(simHBox, pauseBtnBox, chartsHBox);
+        mainVBox = new VBox(simHBox, btnBox, chartsHBox);
+        mainVBox.setPadding(new Insets(10));
         simulationStage.setScene(new Scene(mainVBox));
     }
 

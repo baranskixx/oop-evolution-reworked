@@ -104,3 +104,6 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# csv files
+src/main/resources/csv

@@ -14,6 +14,7 @@ public class WrappedMap extends AbstractWorldMap {
     @Override
     public void moveAnimals() {
         for (Animal animal : animals){
+            animal.increaseLifetime();
             int moveDest = animal.getNextMove();
             if (moveDest != 0 && moveDest != 4){
                 animal.rotateAnimal(moveDest);

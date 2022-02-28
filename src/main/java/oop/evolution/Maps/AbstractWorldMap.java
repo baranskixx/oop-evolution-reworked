@@ -25,10 +25,11 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public final Vector2d mapLowerLeft, mapUpperRight;
     public final Vector2d jungleLowerLeft, jungleUpperRight;
 
-    protected int animalsCnt        = 0;
-    protected int plantsCnt         = 0;
-    protected int allTimeAnimals    = 0;
-    protected int days              = 0;
+    protected int animalsCnt = 0;
+    protected int plantsCnt = 0;
+    protected int allTimeAnimals = 0;
+    protected int days = 0;
+    protected int deadAnimalsSumLifetime = 0;
 
     protected ArrayList<Vector2d> emptyFieldsJungle = new ArrayList<>();
     protected ArrayList<Vector2d> emptyFieldsSteppe = new ArrayList<>();
@@ -36,19 +37,21 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     protected LinkedList<Animal> animals = new LinkedList<>();
     protected LinkedList<Grass> plants = new LinkedList<>();
+
     /**
      * Class constructor.
-     * @param width Number of fields in single row of a map.
+     *
+     * @param width  Number of fields in single row of a map.
      * @param height Number of fields in single column of a map.
      * @param jRatio How many % of map fields are set as a jungle.
      */
-    public AbstractWorldMap(int width, int height, double jRatio){
+    public AbstractWorldMap(int width, int height, double jRatio) {
         mapWidth = width;
         mapHeight = height;
         jungleRatio = jRatio;
 
         mapLowerLeft = new Vector2d(0, 0);
-        mapUpperRight = new Vector2d(mapWidth-1, mapHeight-1);
+        mapUpperRight = new Vector2d(mapWidth - 1, mapHeight - 1);
 
         // calculate centre of a map in both dimensions
         int xCentre = mapWidth / 2;
@@ -61,16 +64,16 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         // calculate jungle borders
         int jLeft, jRight, jBottom, jTop;
 
-        if (mapWidth % 2 == 1){
-            if (jungleWidth % 2 == 1){
+        if (mapWidth % 2 == 1) {
+            if (jungleWidth % 2 == 1) {
                 jLeft = xCentre - (jungleWidth / 2);
                 jRight = xCentre + (jungleWidth / 2);
             } else {
                 jLeft = xCentre - (jungleWidth / 2);
                 jRight = xCentre + (jungleWidth / 2) - 1;
             }
-        } else{
-            if (jungleWidth % 2 == 1){
+        } else {
+            if (jungleWidth % 2 == 1) {
                 jLeft = xCentre - (jungleWidth / 2) - 1;
             } else {
                 jLeft = xCentre - (jungleWidth / 2);
@@ -78,16 +81,16 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
             jRight = xCentre + (jungleWidth / 2) - 1;
         }
 
-        if (mapHeight % 2 == 1){
-            if (jungleHeight % 2 == 1){
+        if (mapHeight % 2 == 1) {
+            if (jungleHeight % 2 == 1) {
                 jBottom = yCentre - (jungleHeight / 2);
                 jTop = yCentre + (jungleHeight / 2);
             } else {
                 jBottom = yCentre - (jungleHeight / 2);
                 jTop = yCentre + (jungleHeight / 2) - 1;
             }
-        } else{
-            if (jungleHeight % 2 == 1){
+        } else {
+            if (jungleHeight % 2 == 1) {
                 jBottom = yCentre - (jungleHeight / 2) - 1;
             } else {
                 jBottom = yCentre - (jungleHeight / 2);
@@ -99,13 +102,13 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         jungleUpperRight = new Vector2d(jRight, jTop);
 
         // fill emptyFields arrayLists and elementsOnFields LinkedHashMap
-        for (int x=0; x < mapWidth; x++){
-            for (int y=0; y < mapHeight; y++){
+        for (int x = 0; x < mapWidth; x++) {
+            for (int y = 0; y < mapHeight; y++) {
                 Vector2d pos = new Vector2d(x, y);
                 elementsOnField.put(pos, 0);
-                if (insideJungle(pos)){
+                if (insideJungle(pos)) {
                     emptyFieldsJungle.add(pos);
-                } else{
+                } else {
                     emptyFieldsSteppe.add(pos);
                 }
             }
@@ -115,7 +118,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     @Override
     public boolean place(Animal animal) {
         Vector2d animalPos = animal.getPosition();
-        if (!onMap(animalPos)){
+        if (!onMap(animalPos)) {
             return false;
         } else {
             animals.add(animal);
@@ -123,7 +126,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
             animalsCnt++;
             allTimeAnimals++;
             elementsOnField.put(animalPos, elementsOnField.get(animalPos) + 1);
-            if(insideJungle(animalPos)){
+            if (insideJungle(animalPos)) {
                 emptyFieldsJungle.remove(animalPos);
             } else {
                 emptyFieldsSteppe.remove(animalPos);
@@ -132,7 +135,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
             return true;
         }
     }
-    
+
     @Override
     public boolean isOccupied(Vector2d position) {
         return emptyFieldsSteppe.contains(position) || emptyFieldsJungle.contains(position);
@@ -140,8 +143,9 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     /**
      * Return object placed at given field.
-     * @param   position The position of the field.
-     * @return  Null if there is nothing on the field, object of Grass type, if there is only plant on the field,
+     *
+     * @param position The position of the field.
+     * @return Null if there is nothing on the field, object of Grass type, if there is only plant on the field,
      * the strongest animal on the field otherwise.
      */
     @Override
@@ -153,7 +157,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         // If no condition above is satisfied return the strongest animal on the field
         Animal found = null;
 
-        for (Animal a : animals){
+        for (Animal a : animals) {
             if (a.getPosition().equals(position) && (found == null || a.getEnergy() > found.getEnergy()))
                 found = a;
         }
@@ -162,9 +166,10 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     /**
      * Get information about map in a string format.
+     *
      * @return String with information about map size, jungle size etc.
      */
-    public String toString(){
+    public String toString() {
         return "Wymiary mapy: " + mapWidth + "x" + mapHeight +
                 "\nLewy dolny punkt mapy: " + mapLowerLeft +
                 "\nPrawy górny punkt mapy: " + mapUpperRight +
@@ -175,19 +180,21 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     /**
      * Check if given Vector2D lies inside maps jungle.
+     *
      * @param pos Vector2D to be checked.
      * @return True if given Vector2D lies inside the jungle. False otherwise.
      */
-    public boolean insideJungle(Vector2d pos){
+    public boolean insideJungle(Vector2d pos) {
         return jungleLowerLeft.precedes(pos) && jungleUpperRight.follows(pos);
     }
 
     /**
      * Check if given Vector2d is positioned within map borders.
+     *
      * @param position Vector2D.
      * @return True if position is not crossing map borders. False otherwise.
      */
-    public boolean onMap(Vector2d position){
+    public boolean onMap(Vector2d position) {
         return mapLowerLeft.precedes(position) && mapUpperRight.follows(position);
     }
 
@@ -202,11 +209,11 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         elementsOnField.put(oldPos, elementsOnField.get(oldPos) - 1);
         elementsOnField.put(newPos, elementsOnField.get(newPos) + 1);
 
-        if (elementsOnField.get(oldPos) == 0){
+        if (elementsOnField.get(oldPos) == 0) {
             if (insideJungle(oldPos)) emptyFieldsJungle.add(oldPos);
             else emptyFieldsSteppe.add(oldPos);
         }
-        if (elementsOnField.get(newPos) == 1){
+        if (elementsOnField.get(newPos) == 1) {
             emptyFieldsSteppe.remove(newPos);
             emptyFieldsJungle.remove(newPos);
         }
@@ -217,14 +224,14 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
      * Plant is placed in jungle if there is at least one empty jungle field.
      * Plant is placed on the steppe if there is at least one empty steppe field.
      */
-    public void addPlants(){
-        if (emptyFieldsJungle.size() != 0){
+    public void addPlants() {
+        if (emptyFieldsJungle.size() != 0) {
             Vector2d newPlantJunglePos = emptyFieldsJungle.remove(new Random().nextInt(emptyFieldsJungle.size()));
             elementsOnField.put(newPlantJunglePos, 1);
             plants.add(new Grass(newPlantJunglePos));
             plantsCnt++;
         }
-        if(emptyFieldsSteppe.size() != 0){
+        if (emptyFieldsSteppe.size() != 0) {
             Vector2d newPlantSteppePos = emptyFieldsSteppe.remove(new Random().nextInt(emptyFieldsSteppe.size()));
             elementsOnField.put(newPlantSteppePos, 1);
             plants.add(new Grass(newPlantSteppePos));
@@ -246,41 +253,18 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     }
 
     /**
-     * Days counter value getter.
-     */
-    public int getDays(){
-        return days;
-    }
-
-    /**
-     * Get number of animals.
-     * @return Number of alive animals.
-     */
-    public int getAnimalsCnt(){
-        return animalsCnt;
-    }
-
-    /**
-     * Get number of plants.
-     * @return Number of plants on the map.
-     */
-    public int getPlantsCnt(){
-        return plantsCnt;
-    }
-
-    /**
      * Remove from map every animal with energy level equal to zero.
      */
-    public void removeDeadAnimals(){
-        for(Animal animal : animals){
-            if(animal.getEnergy() == 0){
+    public void removeDeadAnimals() {
+        for (Animal animal : animals) {
+            if (animal.getEnergy() == 0) {
                 animalsCnt--;
+                deadAnimalsSumLifetime += animal.getLifetime();
+
                 Vector2d oldPos = animal.getPosition();
-
                 elementsOnField.put(oldPos, elementsOnField.get(oldPos) - 1);
-
-                if (elementsOnField.get(oldPos) == 0){
-                    if(insideJungle(oldPos)) emptyFieldsJungle.add(oldPos);
+                if (elementsOnField.get(oldPos) == 0) {
+                    if (insideJungle(oldPos)) emptyFieldsJungle.add(oldPos);
                     else emptyFieldsSteppe.add(oldPos);
                 }
             }
@@ -290,10 +274,10 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     /**
      * Decrease energy of every animal on the map by given value.
-     * @param energyVal
+     * @param energyVal Value that will be added to animal's energy.
      */
-    public void decreaseAnimalsEnergy(int energyVal){
-        for(Animal animal : animals){
+    public void decreaseAnimalsEnergy(int energyVal) {
+        for (Animal animal : animals) {
             animal.changeEnergyLevel(-energyVal);
         }
     }
@@ -303,14 +287,15 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
      * Strongest animal on the field eats. If there is more than one strongest animal on the field
      * every animal with the highest energy level eats, splitting the energy coming from plant to
      * all strongest animals.
+     *
      * @param foodEnergy Energy contained in every plant.
      */
-    public void eating(int foodEnergy){
+    public void eating(int foodEnergy) {
         ArrayList<Grass> deletedPlants = new ArrayList<>();
-        for(Grass plant : plants){
-            if(elementsOnField.get(plant.getPosition()) != 1){
+        for (Grass plant : plants) {
+            if (elementsOnField.get(plant.getPosition()) != 1) {
                 ArrayList<Animal> strongest = findAsStrongAnimals((Animal) objectAt(plant.getPosition()));
-                for(Animal a : strongest){
+                for (Animal a : strongest) {
                     a.changeEnergyLevel(foodEnergy / strongest.size());
                 }
                 plantsCnt--;
@@ -319,25 +304,9 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
             }
         }
 
-        for(Grass plant : deletedPlants){
+        for (Grass plant : deletedPlants) {
             plants.remove(plant);
         }
-    }
-
-    /**
-     * Find all animals as strong as given animal on the same field as given animal.
-     * @param strongestAnimal Compared animal.
-     * @return ArrayList of animals as strong as one given as strongestAnimal.
-     */
-    public ArrayList<Animal> findAsStrongAnimals(Animal strongestAnimal){
-        ArrayList<Animal> strongestList = new ArrayList<>();
-        strongestList.add(strongestAnimal);
-
-        for(Animal a : animals){
-            if(a.getEnergy() == strongestAnimal.getEnergy() && a.getPosition() == strongestAnimal.getPosition()
-                    && !a.equals(strongestAnimal)) strongestList.add(a);
-        }
-        return strongestList;
     }
 
     /**
@@ -372,4 +341,82 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         for (Animal child : children)
             this.place(child);
     }
+
+    /**
+     * Find all animals as strong as given animal on the same field as given animal.
+     *
+     * @param strongestAnimal Compared animal.
+     * @return ArrayList of animals as strong as one given as strongestAnimal.
+     */
+    public ArrayList<Animal> findAsStrongAnimals(Animal strongestAnimal) {
+        ArrayList<Animal> strongestList = new ArrayList<>();
+        strongestList.add(strongestAnimal);
+
+        for (Animal a : animals) {
+            if (a.getEnergy() == strongestAnimal.getEnergy() && a.getPosition() == strongestAnimal.getPosition()
+                    && !a.equals(strongestAnimal)) strongestList.add(a);
+        }
+        return strongestList;
+    }
+
+    // All getters below
+
+    /**
+     * Days counter value getter.
+     */
+    public int getDays() {
+        return days;
+    }
+
+    /**
+     * Get number of animals.
+     *
+     * @return Number of alive animals.
+     */
+    public int getAnimalsCnt() {
+        return animalsCnt;
+    }
+
+    /**
+     * Get number of plants.
+     *
+     * @return Number of plants on the map.
+     */
+    public int getPlantsCnt() {
+        return plantsCnt;
+    }
+
+    /**
+     * Get average energy of all animals on the map.
+     * @return Average animal energy value.
+     */
+    public int getAverageEnergy(){
+        int sumEnergy = 0;
+
+        for(Animal a : animals)
+            sumEnergy += a.getEnergy();
+
+        return sumEnergy / animalsCnt;
+    }
+
+    /**
+     * Get average number of children. Only alive animals are checked.
+     * @return Average number of children for alive animals.
+     */
+    public int getAverageChildrenNumber(){
+        int sumChildren = 0;
+        for(Animal a : animals)
+            sumChildren += a.getChildren();
+
+        return sumChildren / animalsCnt;
+    }
+
+    /**
+     * Get summed up lifetime of all animals.
+     */
+    public int getDeadAnimalsAverageLifetime(){
+        if(allTimeAnimals - animalsCnt == 0) return 0;
+        return deadAnimalsSumLifetime / (allTimeAnimals - animalsCnt);
+    }
+
 }

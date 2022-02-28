@@ -16,11 +16,16 @@ import java.util.Random;
  * @author baranskia
  */
 public class Animal implements IMapElement {
-    private int energy;
+
     private Vector2d position;
     private MapDirection direction;
-    private final int [] genome;
+
+    private int energy;
+    private int children = 0;
+    private int lifetime = 0;
     private int ID;
+    private final int [] genome;
+
     private ArrayList<IPositionChangeObserver> observers = new ArrayList<>();
 
     /**
@@ -75,27 +80,6 @@ public class Animal implements IMapElement {
         energy = Math.max(energy + change, 0);
     }
 
-    public MapDirection getDirection(){
-        return direction;
-    }
-
-    /**
-     * Get current animal position.
-     * @return Vector2d - animal position.
-     */
-    @Override
-    public Vector2d getPosition() {
-        return position;
-    }
-
-    /**
-     * Get int value of next animal move. Thi int is a random pick from animals genome.
-     * @return number from 0 to 7 picked randomly from animals genes.
-     */
-    public int getNextMove(){
-        return genome[new Random().nextInt(32)];
-    }
-
     public void rotateAnimal(int rotation){
         direction = direction.rotate(rotation);
     }
@@ -103,14 +87,6 @@ public class Animal implements IMapElement {
     public void applyMove(Vector2d newPos){
         moveInformObservers(position, newPos);
         this.position = newPos;
-    }
-
-    /**
-     * Getter for energy attribute.
-     * @return Current energy of the animal.
-     */
-    public int getEnergy(){
-        return energy;
     }
 
     /**
@@ -122,10 +98,18 @@ public class Animal implements IMapElement {
     }
 
     /**
-     * Getter for ID attribute.
-     * @return ID number of animal.
+     * Increase children number by 1.
      */
-    public int getID(){ return ID; }
+    public void addChildren(){
+        children++;
+    }
+
+    /**
+     * Increase animal's lifetime by 1.
+     */
+    public void increaseLifetime(){
+        lifetime++;
+    }
 
     /**
      * Add a new Observer. Observer now will be informed about every move of this animal.
@@ -154,14 +138,6 @@ public class Animal implements IMapElement {
     }
 
     /**
-     * Animal's genome getter.
-     * @return Genome of the animal - int [32] array.
-     */
-    public int[] getGenome(){
-        return genome;
-    }
-
-    /**
      * Make this animal copulate with another. Function returns new Animal - child.
      * Asserts that animals are on the same field on the map and both parents have non-zero energy level.
      * @param matePartner Partner for this animal to copulate with.
@@ -185,6 +161,77 @@ public class Animal implements IMapElement {
         this.changeEnergyLevel((int)(this.energy * (-0.25)));
         matePartner.changeEnergyLevel((int)(matePartner.getEnergy() * (-0.25)));
 
+        this.addChildren();
+        matePartner.addChildren();
+
         return new Animal((int)(sumEnergy * 0.25), this.position, newGenome);
     }
+
+    // All getters below
+
+    /**
+     * Getter for ID attribute.
+     * @return ID number of animal.
+     */
+    public int getID(){ return ID; }
+
+    /**
+     * Animal's genome getter.
+     * @return Genome of the animal - int [32] array.
+     */
+    public int[] getGenome(){
+        return genome;
+    }
+
+    /**
+     * Getter for energy attribute.
+     * @return Current energy of the animal.
+     */
+    public int getEnergy(){
+        return energy;
+    }
+
+
+    /**
+     * Get int value of next animal move. Thi int is a random pick from animals genome.
+     * @return number from 0 to 7 picked randomly from animals genes.
+     */
+    public int getNextMove(){
+        return genome[new Random().nextInt(32)];
+    }
+
+    /**
+     * Get current animal direction.
+     * @return MapDirection enum value indicating the direction animal is pointing at.
+     */
+    public MapDirection getDirection(){
+        return direction;
+    }
+
+    /**
+     * Get current animal position.
+     * @return Vector2d - animal position.
+     */
+    @Override
+    public Vector2d getPosition() {
+        return position;
+    }
+
+    /**
+     * Return number of children of animal.
+     * @return Number of animal's children.
+     */
+    public int getChildren(){
+        return children;
+    }
+
+    /**
+     * Get lifetime of an animal.
+     * @return Lifetime on animal in days.
+     */
+    public int getLifetime(){
+        return lifetime;
+    }
+
+
 }
