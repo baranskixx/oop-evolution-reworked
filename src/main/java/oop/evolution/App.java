@@ -24,6 +24,7 @@ import oop.evolution.Maps.WrappedMap;
 import oop.evolution.Simulation.GameEngine;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class App extends Application {
     // TITLE AND ICON OF APP WINDOW
@@ -132,6 +133,8 @@ public class App extends Application {
     // LABELS
     private Label magicNormalMapLabel;
     private Label magicWrappedMapLabel;
+    private Label dominatingGenomeNormal;
+    private Label dominatingGenomeWrapped;
 
     // NORMAL MAP GRAPHS
     private final Graph normalMapAnimalsAlive           = new Graph("Day", "Animals Alive", 200, 200);
@@ -248,7 +251,6 @@ public class App extends Application {
         foodEnergySlider.setSnapToTicks(true);
         foodEnergySlider.setShowTickLabels(true);
         foodEnergySlider.setShowTickMarks(true);
-
 
         mapWidthHBox.setAlignment(Pos.CENTER_RIGHT);
         mapWidthSlider.setPrefSize(SLIDER_WIDTH, SLIDER_HEIGHT);
@@ -415,56 +417,68 @@ public class App extends Application {
     }
 
     public void updateGUI(){
+        // refresh the maps
         normalMapVisualiser.refresh();
         wrappedMapVisualiser.refresh();
 
+        // initialize HBoxes of buttons
         HBox normalBtnHBox = new HBox(toCsvNormalBtn, pauseNormalSimBtn);
         normalBtnHBox.setSpacing(30);
-
         HBox wrappedBtnHBox = new HBox(pauseWrappedSimBtn, toCsvWrappedBtn);
         wrappedBtnHBox.setSpacing(30);
-
         HBox btnBox = new HBox(normalBtnHBox, wrappedBtnHBox);
         btnBox.setSpacing(120);
         btnBox.setAlignment(Pos.CENTER);
         btnBox.setPadding(new Insets(30));
 
+
+
+        dominatingGenomeNormal = new Label("Normal map genome dominant \n" + Arrays.toString(normalMap.getAnimalsGenomeDominant()));
+        dominatingGenomeWrapped = new Label("Wrapped map genome dominant \n" + Arrays.toString(wrappedMap.getAnimalsGenomeDominant()));
+
+        HBox dominatingGenomeHBox = new HBox(dominatingGenomeNormal, dominatingGenomeWrapped);
+        dominatingGenomeHBox.setSpacing(40);
+        dominatingGenomeHBox.setAlignment(Pos.CENTER);
+        // initialize HBox with maps visualisation
         HBox simHBox = new HBox(normalMapVisualiser.getMapVisualisation(), wrappedMapVisualiser.getMapVisualisation());
         simHBox.setAlignment(Pos.TOP_CENTER);
         simHBox.setSpacing(20);
 
+        // initialize charts relating to the normal map
         VBox normalChartsLeftVBox = new VBox(normalMapAnimalsAlive.getLineChart(), normalMapPlants.getLineChart(), normalMapAverageEnergy.getLineChart());
         normalChartsLeftVBox.setSpacing(20);
         VBox normalChartsRightVBox;
+
+        normalChartsRightVBox = new VBox(normalMapAverageChildrenNumber.getLineChart(), normalMapAverageLifetimeDead.getLineChart());
         if(normalSimMagic) {
             magicNormalMapLabel = new Label("Magic: " + Integer.toString(3 - engine.getMagicLeftNormal()) + " / 3");
             magicNormalMapLabel.setFont(magicInfoFont);
-            normalChartsRightVBox = new VBox(magicNormalMapLabel, normalMapAverageChildrenNumber.getLineChart(), normalMapAverageLifetimeDead.getLineChart());
-        } else normalChartsRightVBox = new VBox(normalMapAverageChildrenNumber.getLineChart(), normalMapAverageLifetimeDead.getLineChart());
-
+            normalChartsRightVBox.getChildren().add(0, magicNormalMapLabel);
+        }
         normalChartsRightVBox.setSpacing(20);
         normalChartsRightVBox.setAlignment(Pos.TOP_CENTER);
 
+        // initialize charts relating to the wrapped map
         VBox wrappedChartsRightVBox = new VBox(wrappedMapAnimalsAlive.getLineChart(), wrappedMapPlants.getLineChart(), wrappedMapAverageEnergy.getLineChart());
         wrappedChartsRightVBox.setSpacing(20);
         wrappedChartsRightVBox.setAlignment(Pos.TOP_CENTER);
 
-        VBox wrappedChartsLeftVBox;
+        VBox wrappedChartsLeftVBox = new VBox(wrappedMapAverageChildrenNumber.getLineChart(), wrappedMapAverageLifetimeDead.getLineChart());
         if(wrappedSimMagic){
             magicWrappedMapLabel = new Label("Magic: " + Integer.toString(3 - engine.getMagicLeftWrapped()) + " / 3");
             magicWrappedMapLabel.setFont(magicInfoFont);
-            wrappedChartsLeftVBox = new VBox(magicWrappedMapLabel, wrappedMapAverageChildrenNumber.getLineChart(), wrappedMapAverageLifetimeDead.getLineChart());
+            wrappedChartsLeftVBox.getChildren().add(0, magicWrappedMapLabel);
         }
-        else wrappedChartsLeftVBox = new VBox(wrappedMapAverageChildrenNumber.getLineChart(), wrappedMapAverageLifetimeDead.getLineChart());
-
 
         wrappedChartsLeftVBox.setSpacing(20);
         wrappedChartsLeftVBox.setAlignment(Pos.TOP_CENTER);
 
-        VBox mapsAndButtonsVBox = new VBox(simHBox, btnBox);
+        // initialize HBox containing maps and buttons
+        VBox mapsAndButtonsVBox = new VBox(simHBox, btnBox, dominatingGenomeHBox);
         mapsAndButtonsVBox.setSpacing(40);
         mapsAndButtonsVBox.setAlignment(Pos.TOP_CENTER);
 
+        // initialize mainHBox - containing every element of the scene
         mainHBox = new HBox(normalChartsLeftVBox, normalChartsRightVBox,  mapsAndButtonsVBox, wrappedChartsLeftVBox, wrappedChartsRightVBox);
         mainHBox.setPadding(new Insets(10));
         mainHBox.setAlignment(Pos.CENTER);

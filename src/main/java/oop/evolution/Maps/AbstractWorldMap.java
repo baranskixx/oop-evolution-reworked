@@ -6,10 +6,7 @@ import oop.evolution.OnMapObjects.Animal;
 import oop.evolution.OnMapObjects.Grass;
 import oop.evolution.OnMapPositioning.Vector2d;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Abstract class that defines properties of the map and operations on those properties.
@@ -429,4 +426,28 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         return animals;
     }
 
+    /**
+     * Find the most common genome among all animals.
+     * @return int [32] - most common genome.
+     */
+    public int[] getAnimalsGenomeDominant(){
+        if(animalsCnt == 0) return new int[0];
+        LinkedHashMap<Integer[], Integer> genotypesCnt = new LinkedHashMap<Integer[], Integer>();
+        int [] dominantGenome = new int[32];
+        int occurrences = 0;
+
+        for(Animal a : animals){
+            Integer[] g = Arrays.stream(a.getGenome()).boxed().toArray(Integer[]::new);
+            if (genotypesCnt.containsKey(g)){
+                genotypesCnt.put(g, genotypesCnt.get(g) + 1);
+            } else{
+                genotypesCnt.put(g, 1);
+            }
+            if(genotypesCnt.get(g) > occurrences){
+                dominantGenome = a.getGenome();
+                occurrences = genotypesCnt.get(g);
+            }
+        }
+        return dominantGenome;
+    }
 }
