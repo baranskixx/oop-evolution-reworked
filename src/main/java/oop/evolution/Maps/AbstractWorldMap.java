@@ -391,6 +391,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
      * @return Average animal energy value.
      */
     public int getAverageEnergy(){
+        if(animalsCnt == 0) return 0;
         int sumEnergy = 0;
 
         for(Animal a : animals)
@@ -404,6 +405,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
      * @return Average number of children for alive animals.
      */
     public int getAverageChildrenNumber(){
+        if(animalsCnt == 0) return 0;
         int sumChildren = 0;
         for(Animal a : animals)
             sumChildren += a.getChildren();
@@ -417,6 +419,14 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public int getDeadAnimalsAverageLifetime(){
         if(allTimeAnimals - animalsCnt == 0) return 0;
         return deadAnimalsSumLifetime / (allTimeAnimals - animalsCnt);
+    }
+
+    /**
+     * Get list of animals on the map.
+     * @return LinkedList of Animal objects.
+     */
+    public LinkedList<Animal> getAnimals(){
+        return animals;
     }
 
 }

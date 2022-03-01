@@ -39,6 +39,7 @@ public class App extends Application {
     // FONTS
     public final Font settingsFont  = new Font("Segoe UI", 20);
     public final Font checkBoxFont  = new Font("Segoe UI", 12);
+    public final Font magicInfoFont = new Font("Segoe UI", 24);
 
     // START STAGE ELEMENTS
     // labels
@@ -94,8 +95,10 @@ public class App extends Application {
     public final HBox jungleRatioHBox   = new HBox(jungleRatioLabel, jungleRatioSlider);
     public final HBox magicHBox         = new HBox(magicNormalCheckbox, magicWrappedCheckbox);
     public final HBox btnHBox           = new HBox(runBtn);
-    //  mainVBox
+    //  main VBox
     public VBox mainVBox          = new VBox(mapWidthHBox, mapHeightHBox, jungleRatioHBox, startEnergyHBox, moveEnergyHBox, foodEnergyHBox, magicHBox, btnHBox);
+    //  main HBox
+    public HBox mainHBox;
     // startScene
     public final Scene startScene = new Scene(mainVBox, START_STAGE_WIDTH, START_STAGE_HEIGHT);
 
@@ -118,7 +121,7 @@ public class App extends Application {
 
     // SIMULATION STAGE PROPERTIES
     public final Stage simulationStage              = new Stage();
-    public final int SIMULATION_STAGE_WIDTH         = 1200;
+    public final int SIMULATION_STAGE_WIDTH         = 1800;
     public final int SIMULATION_STAGE_HEIGHT        = 1000;
     public final boolean SIMULATION_STAGE_RESIZABLE = true;
 
@@ -126,17 +129,28 @@ public class App extends Application {
     private MapVisualiser normalMapVisualiser;
     private MapVisualiser wrappedMapVisualiser;
 
+    // LABELS
+    private Label magicNormalMapLabel;
+    private Label magicWrappedMapLabel;
+
     // NORMAL MAP GRAPHS
-    private final Graph normalMapAnimalsAlive = new Graph("Day", "Animals Alive", 200, 200);
-    private final Graph normalMapPlants       = new Graph("Day", "Plants", 200, 200);
+    private final Graph normalMapAnimalsAlive           = new Graph("Day", "Animals Alive", 200, 200);
+    private final Graph normalMapPlants                 = new Graph("Day", "Plants", 200, 200);
+    private final Graph normalMapAverageEnergy          = new Graph("Day", "Average energy", 200, 200);
+    private final Graph normalMapAverageChildrenNumber  = new Graph("Day", "Avg Children", 200, 200);
+    private final Graph normalMapAverageLifetimeDead    = new Graph("Day", "Avg Lifetime", 200, 200);
 
     // WRAPPED MAP GRAPHS
     private final Graph wrappedMapAnimalsAlive = new Graph("Day", "Animals Alive", 200, 200);
     private final Graph wrappedMapPlants       = new Graph("Day", "Plants", 200, 200);
+    private final Graph wrappedMapAverageEnergy          = new Graph("Day", "Average energy", 200, 200);
+    private final Graph wrappedMapAverageChildrenNumber  = new Graph("Day", "Avg Children", 200, 200);
+    private final Graph wrappedMapAverageLifetimeDead    = new Graph("Day", "Avg Lifetime", 200, 200);
 
     // BUTTONS
     private final Button pauseNormalSimBtn  = new Button("Pause");
     private final Button pauseWrappedSimBtn = new Button("Pause");
+
     private final Button toCsvNormalBtn     = new Button("Save to CSV");
     private final Button toCsvWrappedBtn    = new Button("Save to CSV");
 
@@ -147,6 +161,8 @@ public class App extends Application {
     // CSV WRITING PROPERTIES
     private boolean saveNormalCsv = false;
     private boolean saveWrappedCsv = false;
+
+
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -402,11 +418,7 @@ public class App extends Application {
         normalMapVisualiser.refresh();
         wrappedMapVisualiser.refresh();
 
-        HBox simHBox = new HBox(normalMapVisualiser.getMapVisualisation(), wrappedMapVisualiser.getMapVisualisation());
-        simHBox.setAlignment(Pos.TOP_CENTER);
-        simHBox.setSpacing(20);
-
-        HBox normalBtnHBox = new HBox(pauseNormalSimBtn, toCsvNormalBtn);
+        HBox normalBtnHBox = new HBox(toCsvNormalBtn, pauseNormalSimBtn);
         normalBtnHBox.setSpacing(30);
 
         HBox wrappedBtnHBox = new HBox(pauseWrappedSimBtn, toCsvWrappedBtn);
@@ -417,27 +429,65 @@ public class App extends Application {
         btnBox.setAlignment(Pos.CENTER);
         btnBox.setPadding(new Insets(30));
 
-        HBox normalChartsHBox = new HBox(normalMapAnimalsAlive.getLineChart(), normalMapPlants.getLineChart());
-        normalChartsHBox.setSpacing(10);
-        HBox wrappedChartsHBox = new HBox(wrappedMapAnimalsAlive.getLineChart(), wrappedMapPlants.getLineChart());
-        wrappedChartsHBox.setSpacing(10);
-        HBox chartsHBox = new HBox(normalChartsHBox, wrappedChartsHBox);
-        chartsHBox.setSpacing(20);
-        chartsHBox.setAlignment(Pos.BASELINE_CENTER);
+        HBox simHBox = new HBox(normalMapVisualiser.getMapVisualisation(), wrappedMapVisualiser.getMapVisualisation());
+        simHBox.setAlignment(Pos.TOP_CENTER);
+        simHBox.setSpacing(20);
 
-        mainVBox = new VBox(simHBox, btnBox, chartsHBox);
-        mainVBox.setPadding(new Insets(10));
-        simulationStage.setScene(new Scene(mainVBox));
+        VBox normalChartsLeftVBox = new VBox(normalMapAnimalsAlive.getLineChart(), normalMapPlants.getLineChart(), normalMapAverageEnergy.getLineChart());
+        normalChartsLeftVBox.setSpacing(20);
+        VBox normalChartsRightVBox;
+        if(normalSimMagic) {
+            magicNormalMapLabel = new Label("Magic: " + Integer.toString(3 - engine.getMagicLeftNormal()) + " / 3");
+            magicNormalMapLabel.setFont(magicInfoFont);
+            normalChartsRightVBox = new VBox(magicNormalMapLabel, normalMapAverageChildrenNumber.getLineChart(), normalMapAverageLifetimeDead.getLineChart());
+        } else normalChartsRightVBox = new VBox(normalMapAverageChildrenNumber.getLineChart(), normalMapAverageLifetimeDead.getLineChart());
+
+        normalChartsRightVBox.setSpacing(20);
+        normalChartsRightVBox.setAlignment(Pos.TOP_CENTER);
+
+        VBox wrappedChartsRightVBox = new VBox(wrappedMapAnimalsAlive.getLineChart(), wrappedMapPlants.getLineChart(), wrappedMapAverageEnergy.getLineChart());
+        wrappedChartsRightVBox.setSpacing(20);
+        wrappedChartsRightVBox.setAlignment(Pos.TOP_CENTER);
+
+        VBox wrappedChartsLeftVBox;
+        if(wrappedSimMagic){
+            magicWrappedMapLabel = new Label("Magic: " + Integer.toString(3 - engine.getMagicLeftWrapped()) + " / 3");
+            magicWrappedMapLabel.setFont(magicInfoFont);
+            wrappedChartsLeftVBox = new VBox(magicWrappedMapLabel, wrappedMapAverageChildrenNumber.getLineChart(), wrappedMapAverageLifetimeDead.getLineChart());
+        }
+        else wrappedChartsLeftVBox = new VBox(wrappedMapAverageChildrenNumber.getLineChart(), wrappedMapAverageLifetimeDead.getLineChart());
+
+
+        wrappedChartsLeftVBox.setSpacing(20);
+        wrappedChartsLeftVBox.setAlignment(Pos.TOP_CENTER);
+
+        VBox mapsAndButtonsVBox = new VBox(simHBox, btnBox);
+        mapsAndButtonsVBox.setSpacing(40);
+        mapsAndButtonsVBox.setAlignment(Pos.TOP_CENTER);
+
+        mainHBox = new HBox(normalChartsLeftVBox, normalChartsRightVBox,  mapsAndButtonsVBox, wrappedChartsLeftVBox, wrappedChartsRightVBox);
+        mainHBox.setPadding(new Insets(10));
+        mainHBox.setAlignment(Pos.CENTER);
+        mainHBox.setSpacing(20);
+        simulationStage.setScene(new Scene(mainHBox));
     }
 
     public void updateCharts(){
         if(!engine.getNormalStop()) {
-            normalMapAnimalsAlive.updateData(normalMap.getDays(), normalMap.getAnimalsCnt());
-            normalMapPlants.updateData(normalMap.getDays(), normalMap.getPlantsCnt());
+            int days = normalMap.getDays();
+            normalMapAnimalsAlive.updateData(days, normalMap.getAnimalsCnt());
+            normalMapPlants.updateData(days, normalMap.getPlantsCnt());
+            normalMapAverageEnergy.updateData(days, normalMap.getAverageEnergy());
+            normalMapAverageChildrenNumber.updateData(days, normalMap.getAverageChildrenNumber());
+            normalMapAverageLifetimeDead.updateData(days, normalMap.getDeadAnimalsAverageLifetime());
         }
         if(!engine.getWrappedStop()) {
-            wrappedMapAnimalsAlive.updateData(wrappedMap.getDays(), wrappedMap.getAnimalsCnt());
-            wrappedMapPlants.updateData(wrappedMap.getDays(), wrappedMap.getPlantsCnt());
+            int days = wrappedMap.getDays();
+            wrappedMapAnimalsAlive.updateData(days, wrappedMap.getAnimalsCnt());
+            wrappedMapPlants.updateData(days, wrappedMap.getPlantsCnt());
+            wrappedMapAverageEnergy.updateData(days, wrappedMap.getAverageEnergy());
+            wrappedMapAverageChildrenNumber.updateData(days, wrappedMap.getAverageChildrenNumber());
+            wrappedMapAverageLifetimeDead.updateData(days, wrappedMap.getDeadAnimalsAverageLifetime());
         }
     }
 }

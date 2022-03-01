@@ -3,8 +3,13 @@ package oop.evolution.GUI;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.effect.Blend;
+import javafx.scene.effect.BlendMode;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.ColorInput;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 
 /**
  * Class responsible for visualisation of single mapField.
@@ -35,14 +40,12 @@ public class MapField {
      * Set given Img as new Button's image.
      * @param newImg Image to be set as button's image. Can be null.
      */
-    public void updateView(Image newImg){
-        if(newImg != null){
-            imgView.setImage(newImg);
-            imgView.setFitHeight(sizePx/2);
-            imgView.setFitWidth(sizePx/2);
-            btn.setGraphic(imgView);
-            btn.setAlignment(Pos.CENTER);
-        } else btn.setGraphic(null);
+    public void updateView(Image newImg, int energy){
+        imgView.setImage(newImg);
+        imgView.setFitHeight(sizePx/2);
+        imgView.setFitWidth(sizePx/2);
+        btn.setGraphic(imgView);
+        btn.setAlignment(Pos.CENTER);
     }
 
     /**

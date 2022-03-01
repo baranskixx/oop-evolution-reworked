@@ -3,6 +3,7 @@ package oop.evolution.GUI;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import oop.evolution.Maps.AbstractWorldMap;
+import oop.evolution.OnMapObjects.Animal;
 import oop.evolution.OnMapObjects.Grass;
 import oop.evolution.OnMapPositioning.Vector2d;
 
@@ -41,10 +42,10 @@ public class MapVisualiser {
                 Object ob = map.objectAt(pos);
                 MapField field = mapFields.get(pos);
 
-                if (ob == null) field.updateView(null);
-                else if (ob.getClass() == Grass.class) field.updateView(plantImg);
+                if (ob == null) field.updateView(null, 0);
+                else if (ob.getClass() == Grass.class) field.updateView(plantImg, 0);
                 else {
-                    field.updateView(animalImg);
+                    field.updateView(animalImg, ((Animal) ob).getEnergy());
                 }
 
                 mapFields.put(pos, field);
