@@ -42,8 +42,8 @@ public class MapVisualiser {
                 Object ob = map.objectAt(pos);
                 MapField field = mapFields.get(pos);
 
-                if (ob == null) field.updateView(null, 0);
-                else if (ob.getClass() == Grass.class) field.updateView(plantImg, 0);
+                if (ob == null) field.updateView(null, -1);
+                else if (ob.getClass() == Grass.class) field.updateView(plantImg, -1);
                 else {
                     field.updateView(animalImg, ((Animal) ob).getEnergy());
                 }

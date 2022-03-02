@@ -34,7 +34,7 @@ public class App extends Application {
     // START STAGE PROPERTIES
     public final Stage startStage               = new Stage();
     public final int START_STAGE_WIDTH          = 580;
-    public final int START_STAGE_HEIGHT         = 480;
+    public final int START_STAGE_HEIGHT         = 520;
     public final boolean START_STAGE_RESIZABLE  = false;
 
     // FONTS
@@ -50,6 +50,7 @@ public class App extends Application {
     public final Label moveEnergyLabel          = new Label("Move energy:");
     public final Label startEnergyLabel         = new Label("Start energy:");
     public final Label foodEnergyLabel          = new Label("Food energy:");
+    public final Label animalsAtStartLabel      = new Label("Animals: ");
     // sliders
     public final int    SLIDER_WIDTH            = 400;
     public final int    SLIDER_HEIGHT           = 20;
@@ -76,12 +77,18 @@ public class App extends Application {
     public final int    DEFAULT_FOOD_ENERGY     = 25;
     public final int    FOOD_ENERGY_MAJOR_TICK  = 5;
 
-    public final Slider mapWidthSlider    = new Slider(MAP_MIN_DIMENSION, MAP_MAX_DIMENSION, MAP_MIN_DIMENSION);
-    public final Slider mapHeightSlider   = new Slider(MAP_MIN_DIMENSION, MAP_MAX_DIMENSION, MAP_MIN_DIMENSION);
-    public final Slider startEnergySlider = new Slider(MIN_START_ENERGY, MAX_START_ENERGY, DEFAULT_START_ENERGY);
-    public final Slider moveEnergySlider  = new Slider(MIN_MOVE_ENERGY, MAX_MOVE_ENERGY, MIN_MOVE_ENERGY);
-    public final Slider foodEnergySlider  = new Slider(MIN_FOOD_ENERGY, MAX_FOOD_ENERGY, DEFAULT_FOOD_ENERGY);
-    public final Slider jungleRatioSlider = new Slider(MIN_JUNGLE_RATIO, MAX_JUNGLE_RATIO, MIN_JUNGLE_RATIO);
+    public final int    MIN_ANIMALS_START           = 10;
+    public final int    MAX_ANIMALS_START           = 30;
+    public final int    ANIMALS_START_MAJOR_TICK    = 5;
+
+    public final Slider mapWidthSlider     = new Slider(MAP_MIN_DIMENSION, MAP_MAX_DIMENSION, MAP_MIN_DIMENSION);
+    public final Slider mapHeightSlider    = new Slider(MAP_MIN_DIMENSION, MAP_MAX_DIMENSION, MAP_MIN_DIMENSION);
+    public final Slider startEnergySlider  = new Slider(MIN_START_ENERGY, MAX_START_ENERGY, DEFAULT_START_ENERGY);
+    public final Slider moveEnergySlider   = new Slider(MIN_MOVE_ENERGY, MAX_MOVE_ENERGY, MIN_MOVE_ENERGY);
+    public final Slider foodEnergySlider   = new Slider(MIN_FOOD_ENERGY, MAX_FOOD_ENERGY, DEFAULT_FOOD_ENERGY);
+    public final Slider jungleRatioSlider  = new Slider(MIN_JUNGLE_RATIO, MAX_JUNGLE_RATIO, MIN_JUNGLE_RATIO);
+    public final Slider startAnimalsSlider = new Slider(MIN_ANIMALS_START, MAX_ANIMALS_START, MIN_ANIMALS_START);
+
     // checkboxes
     public final CheckBox magicNormalCheckbox  = new CheckBox("Magic on normal map?");
     public final CheckBox magicWrappedCheckbox = new CheckBox("Magic on wrapped map?");
@@ -94,10 +101,11 @@ public class App extends Application {
     public final HBox moveEnergyHBox    = new HBox(moveEnergyLabel, moveEnergySlider);
     public final HBox foodEnergyHBox    = new HBox(foodEnergyLabel, foodEnergySlider);
     public final HBox jungleRatioHBox   = new HBox(jungleRatioLabel, jungleRatioSlider);
+    public final HBox animalsStartHBox  = new HBox(animalsAtStartLabel, startAnimalsSlider);
     public final HBox magicHBox         = new HBox(magicNormalCheckbox, magicWrappedCheckbox);
     public final HBox btnHBox           = new HBox(runBtn);
     //  main VBox
-    public VBox mainVBox          = new VBox(mapWidthHBox, mapHeightHBox, jungleRatioHBox, startEnergyHBox, moveEnergyHBox, foodEnergyHBox, magicHBox, btnHBox);
+    public VBox mainVBox          = new VBox(mapWidthHBox, mapHeightHBox, jungleRatioHBox, startEnergyHBox, moveEnergyHBox, foodEnergyHBox, animalsStartHBox, magicHBox, btnHBox);
     //  main HBox
     public HBox mainHBox;
     // startScene
@@ -110,6 +118,7 @@ public class App extends Application {
     private int     startEnergy;
     private int     moveEnergy;
     private int     foodEnergy;
+    private int     animalsAtStart;
     private boolean normalSimMagic;
     private boolean wrappedSimMagic;
 
@@ -184,6 +193,7 @@ public class App extends Application {
                 startEnergy     = (int) startEnergySlider.getValue();
                 moveEnergy      = (int) moveEnergySlider.getValue();
                 foodEnergy      = (int) foodEnergySlider.getValue();
+                animalsAtStart  = (int) startAnimalsSlider.getValue();
                 normalSimMagic  = magicNormalCheckbox.isSelected();
                 wrappedSimMagic = magicWrappedCheckbox.isSelected();
 
@@ -215,6 +225,7 @@ public class App extends Application {
         startEnergyLabel.setFont(settingsFont);
         moveEnergyLabel.setFont(settingsFont);
         foodEnergyLabel.setFont(settingsFont);
+        animalsAtStartLabel.setFont(settingsFont);
 
         mapWidthSlider.setMajorTickUnit(MAP_DIMENSION_MAJOR_TICK);
         mapWidthSlider.setMinorTickCount(0);
@@ -247,10 +258,15 @@ public class App extends Application {
         moveEnergySlider.setShowTickMarks(true);
 
         foodEnergySlider.setMajorTickUnit(FOOD_ENERGY_MAJOR_TICK);
-        foodEnergySlider.setMinorTickCount(4);
+        foodEnergySlider.setMinorTickCount(FOOD_ENERGY_MAJOR_TICK-1);
         foodEnergySlider.setSnapToTicks(true);
         foodEnergySlider.setShowTickLabels(true);
         foodEnergySlider.setShowTickMarks(true);
+
+        startAnimalsSlider.setMajorTickUnit(START_ENERGY_MAJOR_TICK);
+        startAnimalsSlider.setMinorTickCount(START_ENERGY_MAJOR_TICK-1);
+        startAnimalsSlider.setShowTickLabels(true);
+        startAnimalsSlider.setShowTickMarks(true);
 
         mapWidthHBox.setAlignment(Pos.CENTER_RIGHT);
         mapWidthSlider.setPrefSize(SLIDER_WIDTH, SLIDER_HEIGHT);
@@ -276,6 +292,10 @@ public class App extends Application {
         foodEnergySlider.setPrefSize(SLIDER_WIDTH, SLIDER_HEIGHT);
         foodEnergyHBox.setSpacing(20);
 
+        animalsStartHBox.setAlignment(Pos.CENTER_RIGHT);
+        startAnimalsSlider.setPrefSize(SLIDER_WIDTH, SLIDER_HEIGHT);
+        animalsStartHBox.setSpacing(20);
+
         magicHBox.setAlignment(Pos.CENTER);
         magicHBox.setSpacing(30);
         magicNormalCheckbox.setFont(checkBoxFont);
@@ -294,7 +314,7 @@ public class App extends Application {
     private void prepareSimulation() throws Exception {
         normalMap = new NormalMap(mapWidth, mapHeight, jungleRatio);
         wrappedMap = new WrappedMap(mapWidth, mapHeight, jungleRatio);
-        engine = new GameEngine(normalMap, wrappedMap, normalSimMagic, wrappedSimMagic, startEnergy, moveEnergy, foodEnergy);
+        engine = new GameEngine(normalMap, wrappedMap, normalSimMagic, wrappedSimMagic, startEnergy, moveEnergy, foodEnergy, animalsAtStart);
     }
 
     private void prepareSimulationGUI() throws Exception {

@@ -22,6 +22,12 @@ public class MapField {
     private static final String backgroundJungleStr = "-fx-background-color: #8ae234";
     private static final String backgroundSteppeStr = "-fx-background-color: #d9f5bc";
 
+    private double opacityUnder20 = 0.2;
+    private double opacityUnder50 = 0.4;
+    private double opacityUnder100 = 0.6;
+    private double opacityUnder500 = 0.8;
+    private double opacityUnder1000 = 1.0;
+
     /**
      * Class constructor.
      * @param size Width and height of the field.
@@ -44,6 +50,17 @@ public class MapField {
         imgView.setImage(newImg);
         imgView.setFitHeight(sizePx/2);
         imgView.setFitWidth(sizePx/2);
+        if (energy != -1){
+            if(energy < 20){
+                imgView.setOpacity(opacityUnder20);
+            } else if (energy < 50){
+                imgView.setOpacity(opacityUnder50);
+            } else if (energy < 100){
+                imgView.setOpacity(opacityUnder100);
+            } else if (energy < 500){
+                imgView.setOpacity(opacityUnder500);
+            } else imgView.setOpacity(opacityUnder1000);
+        } else imgView.setOpacity(1);
         btn.setGraphic(imgView);
         btn.setAlignment(Pos.CENTER);
     }

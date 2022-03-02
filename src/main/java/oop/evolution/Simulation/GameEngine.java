@@ -26,8 +26,8 @@ public class GameEngine implements IEngine {
     public final int startEnergy;
     public final int moveEnergy;
     public final int plantEnergy;
+    public final int animalsAtStart;
 
-    public static int startAnimalsNumber = 10;
     public static int magicConditionAnimalsNumber = 5;
 
     private boolean normalStop = false;
@@ -46,7 +46,7 @@ public class GameEngine implements IEngine {
      * @param mEnergy Animal move energy cost.
      * @param pEnergy Energy given to animals when eating single plant.
      */
-    public GameEngine(NormalMap nMap, WrappedMap wMap, boolean nMagic, boolean wMagic, int sEnergy, int mEnergy, int pEnergy) throws Exception {
+    public GameEngine(NormalMap nMap, WrappedMap wMap, boolean nMagic, boolean wMagic, int sEnergy, int mEnergy, int pEnergy, int sAnimals) throws Exception {
         normal = nMap;
         wrapped = wMap;
         normalMagic = nMagic;
@@ -54,8 +54,9 @@ public class GameEngine implements IEngine {
         startEnergy = sEnergy;
         moveEnergy = mEnergy;
         plantEnergy = pEnergy;
+        animalsAtStart = sAnimals;
 
-        for(int i=0; i < startAnimalsNumber; i++){
+        for(int i=0; i < animalsAtStart; i++){
             Animal nAnimal = new Animal(startEnergy, Vector2d.generateRandomPosition(normal.jungleLowerLeft, normal.jungleUpperRight));
             Animal wAnimal = new Animal(startEnergy, Vector2d.generateRandomPosition(normal.jungleLowerLeft, normal.jungleUpperRight));
             normal.place(nAnimal);
