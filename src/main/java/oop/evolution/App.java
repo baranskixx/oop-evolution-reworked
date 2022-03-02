@@ -166,6 +166,9 @@ public class App extends Application {
     private final Button toCsvNormalBtn     = new Button("Save to CSV");
     private final Button toCsvWrappedBtn    = new Button("Save to CSV");
 
+    private final Button showDominantGenomeFieldsNormalBtn = new Button("Show dominant genomes.");
+    private final Button showDominantGenomeFieldsWrappedBtn = new Button("Show dominant genomes.");
+
     // SIMULATION_PROPERTIES
     public final int SLEEP_TIME = 500;
     private boolean guiReady = true;
@@ -265,6 +268,7 @@ public class App extends Application {
 
         startAnimalsSlider.setMajorTickUnit(START_ENERGY_MAJOR_TICK);
         startAnimalsSlider.setMinorTickCount(START_ENERGY_MAJOR_TICK-1);
+        startAnimalsSlider.setSnapToTicks(true);
         startAnimalsSlider.setShowTickLabels(true);
         startAnimalsSlider.setShowTickMarks(true);
 
@@ -336,6 +340,8 @@ public class App extends Application {
             public void handle(ActionEvent event) {
                 engine.changeWrappedStop();
                 if(!saveWrappedCsv) toCsvWrappedBtn.setDisable(!toCsvWrappedBtn.isDisable());
+                showDominantGenomeFieldsWrappedBtn.setDisable(!showDominantGenomeFieldsWrappedBtn.isDisable());
+                wrappedMapVisualiser.hideSpecialFields();
             }
         });
 
@@ -344,6 +350,8 @@ public class App extends Application {
             public void handle(ActionEvent event) {
                 engine.changeNormalStop();
                 if(!saveNormalCsv)  toCsvNormalBtn.setDisable(!toCsvNormalBtn.isDisable());
+                showDominantGenomeFieldsNormalBtn.setDisable(!showDominantGenomeFieldsNormalBtn.isDisable());
+                normalMapVisualiser.hideSpecialFields();
             }
         });
 
@@ -363,8 +371,24 @@ public class App extends Application {
             }
         });
 
+        showDominantGenomeFieldsNormalBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                normalMapVisualiser.showSpecialFields();
+            }
+        });
+
+        showDominantGenomeFieldsWrappedBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                wrappedMapVisualiser.showSpecialFields();
+            }
+        });
+
         toCsvNormalBtn.setDisable(true);
         toCsvWrappedBtn.setDisable(true);
+        showDominantGenomeFieldsNormalBtn.setDisable(true);
+        showDominantGenomeFieldsWrappedBtn.setDisable(true);
 
         simulationStage.getIcons().add(ICON);
         simulationStage.setTitle(TITLE);
@@ -442,9 +466,9 @@ public class App extends Application {
         wrappedMapVisualiser.refresh();
 
         // initialize HBoxes of buttons
-        HBox normalBtnHBox = new HBox(toCsvNormalBtn, pauseNormalSimBtn);
+        HBox normalBtnHBox = new HBox(showDominantGenomeFieldsNormalBtn, toCsvNormalBtn, pauseNormalSimBtn);
         normalBtnHBox.setSpacing(30);
-        HBox wrappedBtnHBox = new HBox(pauseWrappedSimBtn, toCsvWrappedBtn);
+        HBox wrappedBtnHBox = new HBox(pauseWrappedSimBtn, toCsvWrappedBtn, showDominantGenomeFieldsWrappedBtn);
         wrappedBtnHBox.setSpacing(30);
         HBox btnBox = new HBox(normalBtnHBox, wrappedBtnHBox);
         btnBox.setSpacing(120);

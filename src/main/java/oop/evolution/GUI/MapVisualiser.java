@@ -7,7 +7,9 @@ import oop.evolution.OnMapObjects.Animal;
 import oop.evolution.OnMapObjects.Grass;
 import oop.evolution.OnMapPositioning.Vector2d;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 /**
  * Class is responsible for visualisation of the whole map.
@@ -64,5 +66,21 @@ public class MapVisualiser {
         }
 
         return mapGridPane;
+    }
+
+    public void showSpecialFields(){
+        int [] dominatingGenome = map.getAnimalsGenomeDominant();
+        LinkedList<Animal> mapAnimals = map.getAnimals();
+
+        for(Animal a: mapAnimals){
+            if(Arrays.equals(dominatingGenome, a.getGenome()))
+               mapFields.get(a.getPosition()).enableSpecial();
+        }
+    }
+
+    public void hideSpecialFields(){
+        for(Vector2d pos : mapFields.keySet()){
+            mapFields.get(pos).disableSpecial();
+        }
     }
 }

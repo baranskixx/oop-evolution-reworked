@@ -18,9 +18,13 @@ public class MapField {
     public final int    sizePx;
     private ImageView   imgView = new ImageView();
     private Button      btn = new Button();
+    private boolean     special = false;
 
     private static final String backgroundJungleStr = "-fx-background-color: #8ae234";
-    private static final String backgroundSteppeStr = "-fx-background-color: #d9f5bc";
+    private static final String backgroundSteppeStr = "-fx-background-color: #bcf5ee";
+    private static final String backgroundSpecialStr = "-fx-background-color: #6666ff";
+
+    private final String backgroundDefaultStr;
 
     private double opacityUnder20 = 0.2;
     private double opacityUnder50 = 0.4;
@@ -38,8 +42,10 @@ public class MapField {
         btn.setMinSize(sizePx, sizePx);
         btn.setPrefSize(sizePx, sizePx);
         btn.setMaxSize(sizePx, sizePx);
-        if(insideJungle)    btn.setStyle(backgroundJungleStr);
-        else                btn.setStyle(backgroundSteppeStr);
+
+        if(insideJungle)    backgroundDefaultStr = backgroundJungleStr;
+        else                backgroundDefaultStr = backgroundSteppeStr;
+        btn.setStyle(backgroundDefaultStr);
     }
 
     /**
@@ -71,5 +77,13 @@ public class MapField {
      */
     public Node getView(){
         return btn;
+    }
+
+    public void enableSpecial(){
+        btn.setStyle(backgroundSpecialStr);
+    }
+
+    public void disableSpecial(){
+        btn.setStyle(backgroundDefaultStr);
     }
 }
