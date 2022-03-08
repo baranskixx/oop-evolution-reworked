@@ -64,6 +64,10 @@ public class GameEngine implements IEngine {
         }
     }
 
+    /**
+     * Simulate trough the next day on each map (if simulations are not stopped) and
+     * apply the magic effect if magic conditions are met.
+     */
     @Override
     public void run() {
         try {
@@ -87,6 +91,11 @@ public class GameEngine implements IEngine {
         }
     }
 
+    /**
+     * Place on the map copy of each animal that is currently present on the map. Animals are placed on random fields.
+     * @param map Map, where we want to copy the animals.
+     * @throws Exception
+     */
     private void magicEffect(AbstractWorldMap map) throws Exception {
         LinkedList<Animal> animals = map.getAnimals();
         LinkedList<Animal> newAnimals = new LinkedList<>();
@@ -99,6 +108,8 @@ public class GameEngine implements IEngine {
         }
         for(Animal a : newAnimals) map.place(a);
     }
+
+    // Bunch of getters and setters
 
     public void changeWrappedStop(){
         wrappedStop = !wrappedStop;

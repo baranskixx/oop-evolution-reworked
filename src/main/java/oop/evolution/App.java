@@ -132,7 +132,7 @@ public class App extends Application {
     // SIMULATION STAGE PROPERTIES
     public final Stage simulationStage              = new Stage();
     public final int SIMULATION_STAGE_WIDTH         = 1800;
-    public final int SIMULATION_STAGE_HEIGHT        = 1000;
+    public final int SIMULATION_STAGE_HEIGHT        = 800;
     public final boolean SIMULATION_STAGE_RESIZABLE = true;
 
     // SIMULATION STAGE ELEMENTS

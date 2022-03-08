@@ -23,7 +23,11 @@ public class MapVisualiser {
 
     private AbstractWorldMap map;
     private LinkedHashMap<Vector2d, MapField> mapFields = new LinkedHashMap<>();
-    
+
+    /**
+     * Constructor.
+     * @param m Map that is going to be visualised.
+     */
     public MapVisualiser(AbstractWorldMap m){
         map = m;
         FIELD_SIZE = MAP_GRID_SIZE / Math.max(map.mapWidth, map.mapHeight);
@@ -37,6 +41,10 @@ public class MapVisualiser {
         }
     }
 
+    /**
+     * Refresh every field of the map. Basically just check what is placed on each field and
+     * set suitable Image on the field.
+     */
     public void refresh(){
         for (int y = 0; y < map.mapHeight; y++) {
             for (int x = 0; x < map.mapWidth; x++) {
@@ -55,6 +63,10 @@ public class MapVisualiser {
         }
     }
 
+    /**
+     * Get visualisation of the map in form of GridPane() object.
+     * @return GridPane representing the visualised map.
+     */
     public GridPane getMapVisualisation(){
         GridPane mapGridPane = new GridPane();
 
@@ -68,6 +80,10 @@ public class MapVisualiser {
         return mapGridPane;
     }
 
+    /**
+     * Show all special fields.
+     * Special fields are those fields, where there is at least one animal with dominating genome.
+     */
     public void showSpecialFields(){
         int [] dominatingGenome = map.getAnimalsGenomeDominant();
         LinkedList<Animal> mapAnimals = map.getAnimals();
@@ -77,6 +93,7 @@ public class MapVisualiser {
                mapFields.get(a.getPosition()).enableSpecial();
         }
     }
+
 
     public void hideSpecialFields(){
         for(Vector2d pos : mapFields.keySet()){
