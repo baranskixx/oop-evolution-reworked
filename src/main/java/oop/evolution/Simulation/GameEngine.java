@@ -58,7 +58,9 @@ public class GameEngine implements IEngine {
 
         for(int i=0; i < animalsAtStart; i++){
             Animal nAnimal = new Animal(startEnergy, Vector2d.generateRandomPosition(normal.jungleLowerLeft, normal.jungleUpperRight));
-            Animal wAnimal = new Animal(startEnergy, Vector2d.generateRandomPosition(normal.jungleLowerLeft, normal.jungleUpperRight));
+            Animal wAnimal = new Animal(startEnergy, Vector2d.generateRandomPosition(wrapped.jungleLowerLeft, wrapped.jungleUpperRight));
+            System.out.println(nAnimal.getPosition());
+            System.out.println(wAnimal.getPosition());
             normal.place(nAnimal);
             wrapped.place(wAnimal);
         }

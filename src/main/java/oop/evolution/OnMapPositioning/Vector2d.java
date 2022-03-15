@@ -121,7 +121,9 @@ public class Vector2d {
      * @param upRight Position that generated vector has to precede.
      */
     public static Vector2d generateRandomPosition(Vector2d lowLeft, Vector2d upRight){
-        return new Vector2d(new Random().nextInt(lowLeft.y, upRight.y + 1),
-                new Random().nextInt(lowLeft.x, upRight.x + 1));
+        return new Vector2d(new Random().nextInt(lowLeft.x, upRight.x + 1),
+                new Random().nextInt(lowLeft.y, upRight.y + 1));
+
+
     }
 }
